@@ -199,6 +199,10 @@ class WarehouseRepository:
                     raise WarehouseError(409, "batch is sealed")
                 if batch is None:
                     s.add(BatchRow(application_id=app, batch_id=packet.batch_id))
+                peers = s.scalars(select(PacketRow.payload).where(PacketRow.application_id == app,
+                                  PacketRow.batch_id == packet.batch_id)).all()
+                if any(bool(peer.get("experiment")) != bool(packet.experiment) for peer in peers):
+                    raise WarehouseError(409, "comparison metadata must be present on every batch packet")
             if packet.experiment:
                 identity = (app, packet.experiment.dataset_id, packet.experiment.case_id)
                 existing_case = s.get(ComparisonCaseRow, identity)
@@ -208,8 +212,6 @@ class WarehouseRepository:
                 if existing_case is None:
                     s.add(ComparisonCaseRow(application_id=app, dataset_id=identity[1],
                                             case_id=identity[2], source_hash=source_hash))
-                peers = s.scalars(select(PacketRow.payload).where(PacketRow.application_id == app,
-                                  PacketRow.batch_id == packet.batch_id)).all()
                 for payload in peers:
                     experiment = payload.get("experiment")
                     if not experiment or experiment["dataset_id"] != packet.experiment.dataset_id:

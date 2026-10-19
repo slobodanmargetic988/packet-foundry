@@ -225,7 +225,20 @@ async def test_file_prepare_uploads_binary_registers_specifications_and_is_stage
         journal.close()
 
 
-@pytest.mark.parametrize("reference", ["../secret.txt", "/etc/passwd"])
+@pytest.mark.parametrize("reference", [
+    "../secret.txt",
+    "/etc/passwd",
+    r"\etc\passwd",
+    r"C:\private\secret.txt",
+    "C:/private/secret.txt",
+    r"C:secret.txt",
+    "C:",
+    r"\\server\share\secret.txt",
+    "//server/share/secret.txt",
+    r"\\?\C:\private\secret.txt",
+    r"\\.\C:\private\secret.txt",
+    r"..\secret.txt",
+])
 async def test_file_prepare_rejects_paths_outside_input(tmp_path, reference):
     input_dir = tmp_path / "input"
     input_dir.mkdir()

@@ -9,7 +9,7 @@ import os
 import shutil
 from collections.abc import Sequence
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Literal, Protocol
 from uuid import uuid4
 
@@ -93,9 +93,16 @@ class FileAdapter:
             raise ValueError("manifest belongs to a different application")
         materials = list(raw.get("materials", []))
         for item in manifest.files:
+            # A manifest must remain relative when moved between Windows and
+            # POSIX hosts. Native Path.is_absolute() alone misses Windows drive
+            # paths on POSIX and slash-rooted paths on Windows.
+            posix = PurePosixPath(item.path)
+            windows = PureWindowsPath(item.path)
+            if posix.is_absolute() or windows.drive or windows.root:
+                raise ValueError("file material paths must be relative on every platform")
+            if ".." in posix.parts or ".." in windows.parts:
+                raise ValueError("file material paths must not traverse parent directories")
             reference = Path(item.path)
-            if reference.is_absolute():
-                raise ValueError("file material paths must be relative")
             actual = (path.parent / reference).resolve(strict=True)
             if not actual.is_relative_to(self.input_dir) or not actual.is_file():
                 raise ValueError("file material escapes the configured input directory")

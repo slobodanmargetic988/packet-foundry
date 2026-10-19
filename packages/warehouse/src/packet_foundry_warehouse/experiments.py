@@ -101,8 +101,10 @@ async def export_completed(repo: WarehouseRepository, *, transport=None) -> dict
                     response = await client.get("sessions", params={"name": payload["experiment_name"]})
                     response.raise_for_status()
                     projects = response.json()
+                    if not isinstance(projects, list) or any(not isinstance(p, dict) for p in projects):
+                        raise ValueError("unexpected experiment reconciliation response")
                     matches = [p for p in projects if p.get("name") == payload["experiment_name"]
-                        and p.get("extra", {}).get("metadata", {}).get("foundry_manifest_sha256") == digest]
+                        and ((p.get("extra") or {}).get("metadata") or {}).get("foundry_manifest_sha256") == digest]
                     if not matches:
                         tally["uncertain"] += 1
                         continue
