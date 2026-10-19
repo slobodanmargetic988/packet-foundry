@@ -1,6 +1,7 @@
 """Real PostgreSQL ownership, persistence, migration and advisory-lock evidence."""
 
 import asyncio
+import hashlib
 import os
 from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
@@ -93,6 +94,24 @@ def test_factory_coordination_lock_excludes_other_registry_connection(postgres_u
         assert released
     first.dispose()
     second.dispose()
+
+
+def test_registry_guard_does_not_deadlock_warehouse_factory_lock_in_same_database(postgres_url):
+    registry = make_engine(postgres_url)
+    warehouse = make_engine(postgres_url)
+    namespace = "factory:shared-database-worker"
+    # WarehouseRepository.lock uses the raw namespace. Its transaction runs on a
+    # second connection while the registry awaits the forwarded HTTP claim.
+    warehouse_key = int.from_bytes(hashlib.sha256(namespace.encode()).digest()[:8],
+                                   "big", signed=True)
+    with advisory_lock(registry, namespace) as registry_guard:
+        assert registry_guard
+        with warehouse.begin() as connection:
+            acquired = connection.scalar(text("SELECT pg_try_advisory_xact_lock(:key)"),
+                                         {"key": warehouse_key})
+            assert acquired, "Registry relay guard must not block the warehouse claim transaction"
+    registry.dispose()
+    warehouse.dispose()
 
 
 @pytest.mark.asyncio

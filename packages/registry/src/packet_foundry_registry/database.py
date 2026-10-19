@@ -86,7 +86,11 @@ def advisory_lock(engine: Engine, namespace: str) -> Iterator[bool]:
         # SQLite is deliberately limited to isolated nonconcurrent unit tests.
         yield True
         return
-    key = int.from_bytes(hashlib.sha256(namespace.encode()).digest()[:8], signed=True)
+    # PostgreSQL advisory locks are scoped to the database, not search_path/schema.
+    # A registry relay must not hold the warehouse's factory claim lock while
+    # awaiting that claim, even when services use separate schemas in one DB.
+    lock_namespace = "packet-foundry-registry:" + namespace
+    key = int.from_bytes(hashlib.sha256(lock_namespace.encode()).digest()[:8], signed=True)
     with engine.connect() as connection:
         acquired = bool(connection.scalar(text("SELECT pg_try_advisory_lock(:key)"), {"key": key}))
         try:

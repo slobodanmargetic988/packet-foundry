@@ -19,8 +19,10 @@ jobs:
           enable-cache: true
           python-version: '3.12'
       - run: uv sync --locked --all-packages --all-extras --group dev
-      - run: uv run --all-packages pytest packages/collector/tests packages/factory/tests -q
+      - run: uv run --locked --all-packages --all-extras pytest packages/collector/tests packages/factory/tests -q
       - run: uv build --all-packages
+      - name: Verify isolated native wheel installation
+        run: uv run --locked --all-packages --all-extras python scripts/verify_install.py
       - run: uv run --all-packages python scripts/export_schemas.py --output schemas/v1
       - uses: actions/upload-artifact@v4
         with:

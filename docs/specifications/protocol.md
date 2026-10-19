@@ -71,6 +71,11 @@ retryable errors. Cancel/expired attempts cannot renew or commit. A replay of th
 same accepted completion is safe, different completion conflicts. One accepted
 outcome, at-least-once execution. No prefetch or preemption.
 
+Accepted result metadata includes a Warehouse-authored `foundry_validation` record
+listing the checks performed and their timestamp. Media checks establish stored
+checksums, declared MIME and nonempty bytes; they do not certify visual quality or
+decode every possible media format. Completion retries resend their original manifest.
+
 Specifications are immutable: instruction blocks are appended in ref order, then
 packet instructions. output.schema_ref pins an immutable specification JSON schema.
 Artifact refs/spec refs must exist, be owned by the application, and match checksums.

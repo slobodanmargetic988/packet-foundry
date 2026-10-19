@@ -76,6 +76,9 @@ warehouse; the registry neither reads the whole body nor keeps a local media cop
 Warehouse errors are returned as status codes with sanitized details. Outgoing
 clients close when the application shuts down; interrupted downloads close their
 upstream response.
+JSON manifests are limited to 4 MiB by default (`max_manifest_bytes`), including
+unauthenticated requests; streamed media uploads are governed by warehouse artifact
+limits instead.
 
 `GET /health` is anonymous database readiness: it checks a database query and returns
 503 if the registry database is unavailable. It does not probe model/cloud providers.
@@ -126,6 +129,11 @@ active warehouse attempts. Idle shutdown marks the factory draining before the
 provider call. Retained stopped pods resume before new ones are created. Removing
 or disabling a template drains its existing owned pods. A startup timeout stops and
 quarantines a retained pod instead of repeatedly restarting a failing image.
+If a previously running factory stops heartbeating, queued demand cannot keep it
+alive indefinitely: after all valid warehouse leases end, the reconciler stops and
+quarantines it as `offline_failed`. This failure path retains the pod for diagnosis,
+even if normal idle shutdown is configured to terminate. It never aborts an active
+valid lease or automatically creates an endless series of broken replacements.
 Disabling the entire Runpod integration stops API reconciliation; drain or shut down
 managed resources first. Stopping a provider pod can retain storage; consult Runpod's
 resource lifecycle documentation for the behavior of your volume setup.
@@ -136,7 +144,7 @@ foundry-registry --url https://registry.example.com recover-pod RECORD_ID
 ```
 
 Recovery resumes a provider-confirmed stopped owned pod, including one quarantined
-after a startup failure. Fix its runtime configuration before resuming. Unknown
+after a startup or heartbeat failure. Fix its runtime configuration before resuming. Unknown
 create outcomes remain visible as `create_unknown` and intentionally block replacement
 capacity. If the provider confirms no pod exists, explicitly acknowledge that check:
 

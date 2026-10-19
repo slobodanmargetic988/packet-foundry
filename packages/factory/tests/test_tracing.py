@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-from packet_foundry_contracts import ArtifactRef, ExperimentMetadata, Material
+from packet_foundry_contracts import ArtifactRef, ExperimentMetadata, Material, SpecificationRef
 from packet_foundry_factory.config import TracingConfig
 from packet_foundry_factory.tracing import Tracer
 from test_providers import assignment
@@ -25,6 +25,7 @@ async def test_optional_trace_content_redaction_and_start_finish_order(monkeypat
     trace = Tracer(TracingConfig(enabled=True, capture_content=False))
     job = assignment()
     job.packet.batch_id = "batch"
+    job.packet.specifications = [SpecificationRef(spec_id="brand", version="v1", sha256="a" * 64)]
     job.packet.experiment = ExperimentMetadata(dataset_id=str(uuid4()), case_id=str(uuid4()))
     await trace.start(job)
     await trace.finish(job, {"result": {"text": "private output"}})
@@ -34,6 +35,8 @@ async def test_optional_trace_content_redaction_and_start_finish_order(monkeypat
     assert calls[1][1]["outputs"] == {"completed": True}
     assert calls[0][1]["project_name"] == "packet-foundry"
     assert calls[0][1]["extra"]["metadata"]["case_id"] == job.packet.experiment.case_id
+    assert calls[0][1]["extra"]["metadata"]["specifications"] == [
+        {"spec_id": "brand", "version": "v1", "sha256": "a" * 64}]
     assert "reference_example_id" not in calls[0][1]
 
 

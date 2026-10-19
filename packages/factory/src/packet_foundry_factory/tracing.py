@@ -76,11 +76,16 @@ class Tracer:
         experiment = assignment.packet.experiment
         metadata = {"packet_id": assignment.packet.packet_id, "attempt_id": assignment.attempt_id,
                     "factory_id": assignment.factory_id, "profile_id": assignment.profile.profile_id,
-                    "batch_id": assignment.packet.batch_id, "model": assignment.profile.model}
+                    "batch_id": assignment.packet.batch_id, "model": assignment.profile.model,
+                    "backend": assignment.profile.backend,
+                    "specifications": [ref.model_dump(mode="json")
+                                       for ref in assignment.packet.specifications]}
         if experiment:
             metadata.update(experiment.model_dump(mode="json"))
         inputs = {"instructions": assignment.resolved_instructions,
                   "system_prompt": assignment.resolved_system_prompt,
+                  "expected_output": assignment.packet.output.model_dump(mode="json"),
+                  "resolved_output_schema": assignment.resolved_output_schema,
                   "materials": [m.model_dump(mode="json") for m in assignment.packet.materials]}
         def create():
             files = [(f"input_{index}_{material.kind}", material.artifact.mime_type,

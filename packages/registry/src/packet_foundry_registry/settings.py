@@ -64,6 +64,7 @@ class RegistrySettings(BaseSettings):
     offline_after_seconds: int = Field(default=90, ge=30)
     warehouse_timeout_seconds: float = Field(default=30, gt=0)
     poll_interval_seconds: float = Field(default=0.5, gt=0)
+    max_manifest_bytes: int = Field(default=4 * 1024**2, ge=1024)
     runpod_enabled: bool = False
     runpod_api_key: SecretStr = SecretStr("")
     runpod_api_url: str = "https://rest.runpod.io/v1"

@@ -80,8 +80,9 @@ def test_shared_specs_are_pinned_and_schema_validated(repository):
     with pytest.raises(WarehouseError, match="JSON Schema"):
         repository.complete(job.attempt_id, Completion(**token(job).model_dump(),
             result=ResultPackage(json_data={})))
-    repository.complete(job.attempt_id, Completion(**token(job).model_dump(),
+    accepted = repository.complete(job.attempt_id, Completion(**token(job).model_dump(),
         result=ResultPackage(json_data={"title": "Valid"})))
+    assert accepted.result.metadata["foundry_validation"]["checks"] == ["json_schema"]
     with pytest.raises(WarehouseError, match="local JSON"):
         repository.put_spec("alpha", Specification(spec_id="bad", version="v1",
                                                   json_schema={"$ref": "https://example.com/schema"}))

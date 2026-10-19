@@ -1,0 +1,32 @@
+{
+  "backend": "openai_compatible",
+  "model": "qwen2.5-coder:0.5b",
+  "output_kind": "json",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "started_at": "2026-10-19T21:28:12.165928+00:00",
+  "real_provider": true,
+  "status": "passed",
+  "result": {
+    "text": null,
+    "json_data": {
+      "ok": true
+    },
+    "artifacts": [],
+    "metadata": {
+      "model": "qwen2.5-coder:0.5b",
+      "backend": "openai_compatible",
+      "usage": {
+        "prompt_tokens": 107,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens": 6,
+        "total_tokens": 113
+      }
+    }
+  },
+  "artifacts": [],
+  "duration_seconds": 1.271,
+  "finished_at": "2026-10-19T21:28:13.437293+00:00"
+}

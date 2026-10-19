@@ -95,6 +95,20 @@ def create_app(
     app.state.engine = engine
     app.state.sessions = session_factory
 
+    @app.middleware("http")
+    async def manifest_limit(request: Request, call_next):
+        # FastAPI parses typed JSON bodies before dependency authentication. Bound
+        # that allocation even for anonymous callers, while leaving media streamed.
+        if request.url.path.rstrip("/") != "/v1/artifacts":
+            chunks, size = [], 0
+            async for chunk in request.stream():
+                size += len(chunk)
+                if size > settings.max_manifest_bytes:
+                    return JSONResponse(status_code=413, content={"detail": "Manifest exceeds configured size"})
+                chunks.append(chunk)
+            request._body = b"".join(chunks)
+        return await call_next(request)
+
     @app.exception_handler(RequestValidationError)
     async def invalid_request(_request: Request, _error: RequestValidationError):
         return JSONResponse(status_code=422, content={"detail": "Invalid request"})

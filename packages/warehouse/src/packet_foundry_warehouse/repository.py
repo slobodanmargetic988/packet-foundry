@@ -474,6 +474,17 @@ class WarehouseRepository:
             attempt.status, attempt.result_hash = "succeeded", digest
             row.status, row.completed_at = "succeeded", utcnow()
             row.result, row.error = body.result.model_dump(mode="json"), None
+            checks = ["artifact_ownership_and_checksums"] if body.result.artifacts else []
+            if output.kind == "text":
+                checks.append("nonblank_text")
+            elif output.kind == "json":
+                checks.append("json_schema" if assignment.resolved_output_schema else "json_encoding")
+            else:
+                checks.append("nonempty_media_and_declared_mime")
+            row.result["metadata"]["foundry_validation"] = {
+                "passed": True, "output_kind": output.kind, "checks": checks,
+                "validated_at": row.completed_at.isoformat(),
+            }
             return self.record(row)
 
     def fail(self, attempt_id: str, body: Failure) -> PacketRecord:

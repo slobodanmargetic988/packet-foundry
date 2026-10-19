@@ -247,7 +247,7 @@ class RunpodController:
                 # Retain the record: if an old delayed create later appears,
                 # reconciliation recognizes its ownership name and shuts it down.
                 return {"state": "abandoned"}
-            if row.state not in {"stopped", "startup_failed"} or len(matches) != 1:
+            if row.state not in {"stopped", "startup_failed", "offline_failed"} or len(matches) != 1:
                 raise RunpodError("only_confirmed_stopped_owned_pods_can_resume")
             pod = matches[0]
             if pod.get("id") != row.provider_pod_id or pod.get("desiredStatus") not in {"EXITED", "STOPPED"}:
@@ -293,7 +293,7 @@ class RunpodController:
             return
         status = str(provider.get("desiredStatus", "")).upper()
         if status in {"EXITED", "STOPPED"}:
-            if pod.state == "startup_failed" or abandoned:
+            if pod.state in {"startup_failed", "offline_failed"} or abandoned:
                 return
             self.change(pod.record_id, "stopped")
             return
@@ -312,14 +312,15 @@ class RunpodController:
                      and utcnow() - utc(pod.updated_at) > timedelta(
                          seconds=template.startup_timeout_seconds if template else 600,
                      ))
+        offline_failure = pod.state == "offline_failed" or (pod.state == "running" and not ready)
         pending = template and template.enabled and any(packet.priority > 0 and any(
             profile.matches(packet) for profile in template.profiles
         ) for packet in queued)
-        if pod.state == "running" and pending:
+        if pod.state == "running" and ready and pending:
             with self.sessions.begin() as session:
                 session.get(CloudPod, pod.record_id).last_busy_at = utcnow()
             return
-        if pod.state in {"running", "draining", "stopping"} or timed_out or abandoned:
+        if pod.state in {"running", "draining", "stopping"} or timed_out or abandoned or offline_failure:
             with advisory_lock(self.engine, "factory:" + pod.factory_id) as acquired:
                 if not acquired:
                     return
@@ -331,7 +332,7 @@ class RunpodController:
                 idle = utcnow() - utc(pod.last_busy_at) >= timedelta(
                     seconds=template.idle_timeout_seconds if template else 0,
                 )
-                if not (timed_out or abandoned or not template or not template.enabled or idle
+                if not (timed_out or offline_failure or abandoned or not template or not template.enabled or idle
                         or pod.state in {"draining", "stopping"}):
                     return
                 with self.sessions.begin() as session:
@@ -340,13 +341,24 @@ class RunpodController:
                     row.state = "draining"
                 # The same factory advisory lock excludes every in-flight claim.
                 # No new claim is possible after the persisted drain marker.
-                method = "DELETE" if pod.shutdown_action == "terminate" else "POST"
+                # A dead worker is quarantined after stopping, even for templates
+                # that normally terminate idle pods. Preserve it for diagnosis and
+                # avoid an unbounded create/crash/recreate loop under queued demand.
+                method = "DELETE" if pod.shutdown_action == "terminate" and not offline_failure else "POST"
                 path = f"pods/{pod.provider_pod_id}"
                 if method == "POST":
                     path += "/stop"
-                self.change(pod.record_id, "stopping")
+                if offline_failure:
+                    # Persist before the API call: a lost stop response must not
+                    # turn the quarantined worker back into resumable capacity.
+                    self.error(pod.record_id, "factory_offline", state="offline_failed")
+                else:
+                    self.change(pod.record_id, "stopping")
                 await self.provider(method, path)
-                self.change(pod.record_id, "terminated" if method == "DELETE" else "stopped")
+                self.change(pod.record_id, "offline_failed" if offline_failure else (
+                    "terminated" if method == "DELETE" else "stopped"))
+                if offline_failure:
+                    self.error(pod.record_id, "factory_offline")
                 if abandoned and method != "DELETE":
                     self.change(pod.record_id, "abandoned")
                 if timed_out and method != "DELETE":

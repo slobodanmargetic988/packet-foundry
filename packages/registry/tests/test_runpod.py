@@ -186,6 +186,36 @@ async def test_active_attempts_prevent_shutdown(cloud):
 
 
 @pytest.mark.asyncio
+async def test_offline_running_factory_cannot_keep_capacity_forever_under_pending_demand(cloud):
+    controller, provider, state, template = cloud
+    template.shutdown_action = "terminate"
+    await controller.tick()
+    ready(controller, template)
+    await controller.tick()
+    pod = first(controller)
+    with controller.sessions.begin() as session:
+        session.get(Factory, pod.factory_id).last_seen_at = utcnow() - timedelta(seconds=120)
+    # Missing heartbeats alone cannot abort a still-valid warehouse attempt.
+    state["active"] = 1
+    await controller.tick()
+    assert first(controller).state == "running"
+    assert not any(path.endswith("/stop") or method == "DELETE"
+                   for method, path, _ in provider.calls)
+    state["active"] = 0
+    await controller.tick()
+    assert first(controller).state == "offline_failed"
+    assert first(controller).error_code == "factory_offline"
+    assert any(path.endswith("/stop") for _, path, _ in provider.calls)
+    assert not any(method == "DELETE" for method, _, _ in provider.calls)
+    # Queued demand must not restart or replace the same broken runtime forever.
+    await controller.tick()
+    assert first(controller).state == "offline_failed"
+    assert provider.creates == 1
+    assert not any(path.endswith("/start") for _, path, _ in provider.calls)
+    assert await controller.recover(pod.record_id) == {"state": "starting"}
+
+
+@pytest.mark.asyncio
 async def test_never_touch_unowned_pods_and_removed_template_drains_owned(cloud):
     controller, provider, state, template = cloud
     await controller.tick()

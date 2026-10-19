@@ -85,7 +85,7 @@ def registry(tmp_path):
     transport = WarehouseTransport()
     settings = RegistrySettings(
         database_url="sqlite:///:memory:", admin_token=ADMIN, warehouse_token=SERVICE,
-        warehouse_url="http://warehouse.test", poll_interval_seconds=0.001,
+        warehouse_url="http://warehouse.test", poll_interval_seconds=0.001, max_manifest_bytes=1024,
     )
     app = create_app(settings, warehouse_transport=transport, initialize_schema=True)
     with TestClient(app) as client:
@@ -235,6 +235,21 @@ def test_validation_errors_never_echo_supplied_credentials(registry):
     assert response.status_code == 422
     assert response.json() == {"detail": "Invalid request"}
     assert "sensitive-marker" not in response.text
+
+
+def test_manifest_limit_bounds_anonymous_body_without_buffering_binary_upload(registry):
+    client, _, transport = registry
+    response = client.post("/v1/register", content=b"x" * 2048,
+                           headers={"Content-Type": "application/json"})
+    assert response.status_code == 413
+    assert not transport.requests
+    headers = registered(client)
+    headers.update({"X-Fencing-Token": "1", "X-Content-SHA256": "a" * 64})
+    uploaded = client.post("/v1/artifacts?attempt_id=attempt-one", content=b"x" * 2048,
+                           headers=headers)
+    assert uploaded.status_code == 200
+    assert transport.upload_was_streaming
+    assert sum(len(chunk) for chunk in transport.upload_chunks) == 2048
 
 
 def test_assignment_identity_is_checked(registry):
