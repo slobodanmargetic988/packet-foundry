@@ -149,8 +149,9 @@ def test_expiry_fences_late_results_and_completion_replays(repository):
     assert current.fencing_token > old.fencing_token
     with pytest.raises(WarehouseError):
         finish(repository, old, "late")
-    assert finish(repository, current).status == "succeeded"
-    assert finish(repository, current).status == "succeeded"
+    accepted = finish(repository, current)
+    assert accepted.status == "succeeded"
+    assert finish(repository, current).result == accepted.result
     with pytest.raises(WarehouseError, match="differs"):
         finish(repository, current, "different")
     with pytest.raises(WarehouseError):

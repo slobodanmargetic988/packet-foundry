@@ -103,6 +103,9 @@ the case ID when source content changes. Prompt/model variants belong to experim
 run metadata, so changing a prompt does not break comparison identity. Seal a batch
 only after all submissions are acknowledged.
 
+Provenance is also retained in `actual_outputs.metadata.foundry_provenance`, since
+some server versions accept per-row metadata without persisting it on the run.
+
 The exporter uses LangSmith's external experiment upload protocol. Its dataset IDs
 are independent of datasets created through other LangSmith APIs. Artifact manifests
 and factory trace IDs are retained; binary comparison-grid rendering is not supplied

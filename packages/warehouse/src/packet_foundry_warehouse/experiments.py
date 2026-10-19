@@ -1,5 +1,6 @@
 """Optional export of sealed, terminal batches; never executes generation again."""
 import asyncio
+import copy
 import logging
 from uuid import NAMESPACE_URL, uuid5
 
@@ -31,19 +32,24 @@ def snapshot(repo: WarehouseRepository, app: str, batch_id: str) -> dict | None:
         results = []
         for row, packet in zip(rows, packets, strict=True):
             envelope = repo.envelope(s, row)
+            provenance = {"packet_id": packet.packet_id, "status": row.status,
+                "request": packet.request.model_dump(mode="json"),
+                "specifications": [ref.model_dump() for ref in packet.specifications],
+                "factory_id": envelope.factory_id, "profile_id": envelope.profile_id,
+                "attempt_id": envelope.attempt_id, "tags": packet.experiment.tags,
+                "langsmith_trace_id": (row.result or {}).get("metadata", {}).get("langsmith_trace_id")}
+            # Some server versions accept run_metadata but omit it from stored runs.
+            # Keep provenance in supported outputs too, without altering delivery results.
+            actual_outputs = copy.deepcopy(row.result or {})
+            actual_outputs.setdefault("metadata", {})["foundry_provenance"] = provenance
             result = {
                 "row_id": str(uuid5(NAMESPACE_URL, f"packet-foundry:{app}:{dataset}:{packet.experiment.case_id}")),
                 "inputs": comparison_inputs(packet),
-                "actual_outputs": row.result or {},
+                "actual_outputs": actual_outputs,
                 "start_time": packet.created_at.isoformat(),
                 "end_time": aware(row.completed_at).isoformat(),
                 "run_name": packet.experiment.label or "Packet Foundry generation",
-                "run_metadata": {"packet_id": packet.packet_id, "status": row.status,
-                    "request": packet.request.model_dump(mode="json"),
-                    "specifications": [r.model_dump() for r in packet.specifications],
-                    "factory_id": envelope.factory_id, "profile_id": envelope.profile_id,
-                    "attempt_id": envelope.attempt_id, "tags": packet.experiment.tags,
-                    "langsmith_trace_id": (row.result or {}).get("metadata", {}).get("langsmith_trace_id")},
+                "run_metadata": provenance,
             }
             if row.error:
                 result["error"] = row.error["message"]

@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "factory_count": 2,
+  "factory_run_count": 4,
+  "comparison_batch_count": 2,
+  "experiment_run_count": 4,
+  "case_count": 2,
+  "checked_at": "2026-10-19T21:36:57.924415+00:00",
+  "model": "qwen2.5-coder:0.5b",
+  "real_inference": "local Ollama",
+  "external_service": "actual configured LangSmith workspace",
+  "same_dataset_verified": true,
+  "same_case_references_verified": true,
+  "source_inputs_equal_across_experiments": true,
+  "trace_links_verified": true,
+  "attachment_transport": {
+    "status": "passed",
+    "uploaded_attachment_count": 2,
+    "retrieved_attachment_count": 2,
+    "synthetic_transport_only": true,
+    "real_media_generation": false
+  },
+  "ui_visual_inspection": false
+}

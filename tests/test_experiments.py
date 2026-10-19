@@ -54,6 +54,8 @@ async def test_native_experiment_batches_align_case_ids(repository):
     first_inputs = {row["row_id"]: row["inputs"] for row in bodies[0]["results"]}
     second_inputs = {row["row_id"]: row["inputs"] for row in bodies[1]["results"]}
     assert first_inputs == second_inputs
+    assert bodies[0]["results"][0]["actual_outputs"]["metadata"]["foundry_provenance"] == (
+        bodies[0]["results"][0]["run_metadata"])
     assert (await export_completed(repository, transport=httpx.MockTransport(handler)))["exported"] == 0
 
 

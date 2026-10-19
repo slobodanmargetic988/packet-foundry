@@ -9,14 +9,14 @@ synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evide
 
 | Check | Evidence | Boundary |
 | --- | --- | --- |
-| Local automated suite | **114 passed**, Python 3.12.13 on macOS ARM64, real PostgreSQL | Includes synthetic provider fixtures; no paid inference in tests |
+| Local automated suite | **129 passed**, Python 3.12.13 on macOS ARM64, real PostgreSQL | Includes synthetic provider fixtures; no paid inference in tests |
 | Mixed batch | Two actual FactoryDaemon instances processed **300 text/JSON packets**, consumed/ACKed once through Collector/Warehouse/Registry | HTTP applications in-process; inference responses synthetic |
 | Docker quick start | Four separate service containers, PostgreSQL 17, both migrations, healthy servers, complete packet result and ACK | Linux ARM64 Docker; fixture provider synthetic |
 | Docker recovery | Warehouse/Registry recreated and Factory/Collector restarted; second packet completed/ACKed; all pending journals empty | Same retained test volumes |
 | Database isolation | Warehouse/Registry use separate roles/databases; cross-database connection refused | Compose deployment |
 | Durable protocol | Duplicate submissions, shared specs, concurrent claims, capacity, lease fencing/expiry, cancellation/renewal races, bounded retries, ACK persistence | Real PostgreSQL integration tests |
-| Experiment export | Stable comparison IDs, frozen sources, terminal errors, uncertain upload reconciliation without duplicate POST | Mocked LangSmith endpoint |
-| Media trace serialization | Actual optional LangSmith SDK sends MIME + attachment bytes through multipart ingestion | In-memory HTTP session; real service/UI not contacted |
+| Experiment export | Two native experiments in an actual LangSmith workspace share two cases and the same dataset; four successful local generations from two factories link to their traces | Actual service API verified; comparison UI not visually inspected |
+| Media trace transport | Actual SDK uploaded two synthetic PNG attachments; stored bytes were downloaded and matched | Proves transport, not model media generation or UI rendering |
 | Packaging | All five wheels build; independent factory installation from wheel bundle succeeds | Native installation tested in an isolated local tool environment |
 
 Container evidence: [deployment and restart summary](evidence/2026-10-19/compose.json).
@@ -33,8 +33,8 @@ Real provider evidence below contains only synthetic smoke-test content, no cred
 | Anthropic API | Protocol fixtures pass; no API credential configured for live checks | Real text/JSON generation |
 | Google image / Veo video | Protocol, binary handling, durable operation ID/poll/resume fixtures pass | Configured Google credential and real image/video outputs |
 | ComfyUI | Approved templates, shared prompts, file handling, traversal rejection and operation recovery tested | Actual installed models/workflows and image/video generation on GPU |
-| OpenAI-compatible server | Real adapter exercised over HTTP in Docker against a clearly synthetic fixture | Actual inference server of the operator's choice |
-| LangSmith | Optional tracing/attachments and external experiment export implemented and contract-tested | Two factories writing to an actual workspace; native experiment comparison and media rendering |
+| OpenAI-compatible server | **JSON passed** against Ollama's real compatibility endpoint, local `qwen2.5-coder:0.5b` | Other compatible inference servers |
+| LangSmith | **Passed:** two factories, four attempt traces, two comparable native experiments, two shared cases, and two retrieved attachments | Comparison UI/media rendering not visually inspected; attachments were synthetic PNG fixtures |
 | Runpod | REST lifecycle, ownership, ambiguous create recovery, startup quarantine, idle drain/stop and leader coordination tested | Configured account/template; real pod start, work, drain and stop |
 
 Codex: [text probe](evidence/2026-10-19/codex-text.json),
@@ -45,12 +45,17 @@ prompt/final output, not a promise about the provider's internal HTTP call count
 
 Ollama: [text probe](evidence/2026-10-19/ollama-text.json),
 [JSON probe](evidence/2026-10-19/ollama-json.json).
+OpenAI-compatible: [JSON probe](evidence/2026-10-19/openai-compatible-json.json).
+LangSmith: [actual service verification](evidence/2026-10-19/langsmith.json).
 
 ## Platform verification
 
-GitHub CI is configured for native Windows, macOS and Linux collector/factory tests,
-wheel building, PostgreSQL integration, and a complete Linux Compose demonstration.
-Workflow results must be consulted rather than inferred from configuration. Native
+GitHub CI passed native Windows, macOS and Linux collector/factory tests and wheel
+building, PostgreSQL integration, and a complete Linux Compose demonstration
+([verified run](https://github.com/slobodanmargetic988/packet-foundry/actions/runs/39328340100)).
+Native CI also verifies installation from built wheels in a disposable environment,
+including all five imports and four service entrypoints. Consult current workflow
+results for the latest revision. Native
 managed-startup command generation is tested; installing startup services on the
 owner's personal computers is deliberately deferred.
 
@@ -80,10 +85,14 @@ tests and write ignored `.local/live-evidence` files. Examples:
 uv run --all-packages python scripts/verify_live.py --backend codex --model YOUR_CODEX_MODEL --kind json
 uv run --all-packages python scripts/verify_live.py --backend ollama --model YOUR_INSTALLED_MODEL --kind text
 uv run --all-packages python scripts/verify_live.py --backend openai --model YOUR_API_MODEL --kind json --allow-api
+uv run --all-packages --all-extras python scripts/verify_langsmith.py --env-file /path/to/private.env --verify-attachments
 ```
 
 API probes use locally configured credentials and can incur provider charges.
 Configure provider-side limits. Packets themselves have no cost policy or accounting.
+The LangSmith verifier requires both isolated test PostgreSQL URLs, an already
+installed Ollama model and LangSmith credentials; it creates synthetic projects and
+records their private inspection URLs in the ignored local evidence file.
 Real GPU/media and cloud/workspace checks remain release verification work until
 actual outputs and lifecycle evidence exist; no personal Windows deployment or
 Media Presence collector customization has been performed.
