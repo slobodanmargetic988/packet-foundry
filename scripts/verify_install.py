@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import zipfile
 from pathlib import Path
 
 PACKAGES = (
@@ -30,6 +31,12 @@ def verify(wheel_directory: Path, python_version: str) -> None:
         matches = list(wheel_directory.glob(package.replace("-", "_") + "-*.whl"))
         if len(matches) != 1:
             raise RuntimeError(f"expected exactly one built wheel for {package}")
+        with zipfile.ZipFile(matches[0]) as archive:
+            for notice in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"):
+                paths = [name for name in archive.namelist()
+                         if name.endswith(".dist-info/licenses/" + notice)]
+                if len(paths) != 1 or archive.read(paths[0]) != (ROOT / notice).read_bytes():
+                    raise RuntimeError(f"{package} wheel is missing the canonical {notice}")
         wheels.append(str(matches[0]))
 
     with tempfile.TemporaryDirectory(prefix="packet-foundry-install-") as temporary:

@@ -29,7 +29,8 @@ jobs:
           output = pathlib.Path('release')
           output.mkdir()
           with zipfile.ZipFile(output / 'packet-foundry-wheels.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
-              for path in sorted([*pathlib.Path('dist').glob('*.whl'), pathlib.Path('dist/constraints.txt')]):
+              for path in sorted([*pathlib.Path('dist').glob('*.whl'), pathlib.Path('dist/constraints.txt'),
+                                  pathlib.Path('LICENSE'), pathlib.Path('NOTICE'), pathlib.Path('THIRD_PARTY_NOTICES.md')]):
                   archive.write(path, path.name)
           shutil.make_archive(str(output / 'packet-foundry-schemas'), 'zip', 'schemas')
           shutil.copy('scripts/bootstrap.py', output / 'bootstrap.py')

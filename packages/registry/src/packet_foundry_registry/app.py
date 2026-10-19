@@ -89,7 +89,7 @@ def create_app(
         finally:
             engine.dispose()
 
-    app = FastAPI(title="Packet Foundry Registry", version="0.1.0", lifespan=lifespan,
+    app = FastAPI(title="Packet Foundry Registry", version="0.1.1", lifespan=lifespan,
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.state.settings = settings
     app.state.engine = engine

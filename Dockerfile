@@ -22,25 +22,25 @@ COPY --from=wheels /constraints.txt /constraints.txt
 WORKDIR /data
 
 FROM runtime AS warehouse
-RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-warehouse==0.1.0 && rm -rf /wheels
+RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-warehouse==0.1.1 && rm -rf /wheels
 USER foundry
 ENTRYPOINT ["foundry-warehouse"]
 CMD ["run", "--host", "0.0.0.0", "--port", "8101"]
 
 FROM runtime AS registry
-RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-registry==0.1.0 && rm -rf /wheels
+RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-registry==0.1.1 && rm -rf /wheels
 USER foundry
 ENTRYPOINT ["foundry-registry"]
 CMD ["run"]
 
 FROM runtime AS collector
-RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-collector==0.1.0 && rm -rf /wheels
+RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels packet-foundry-collector==0.1.1 && rm -rf /wheels
 USER foundry
 ENTRYPOINT ["foundry-collector"]
 CMD ["run", "--config", "/config/collector.json"]
 
 FROM runtime AS factory
-RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels 'packet-foundry-factory[tracing]==0.1.0' && rm -rf /wheels
+RUN pip install --no-cache-dir --constraint /constraints.txt --find-links /wheels 'packet-foundry-factory[tracing]==0.1.1' && rm -rf /wheels
 USER foundry
 ENTRYPOINT ["foundry-factory"]
 CMD ["run"]

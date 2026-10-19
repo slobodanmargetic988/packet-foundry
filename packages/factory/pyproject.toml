@@ -1,15 +1,16 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
 name = "packet-foundry-factory"
-version = "0.1.0"
+version = "0.1.1"
 description = "Reusable Packet Foundry factory service"
 requires-python = ">=3.12"
 license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"]
 dependencies = [
-  "packet-foundry-contracts==0.1.0",
+  "packet-foundry-contracts==0.1.1",
   "httpx>=0.28,<1",
   "pydantic-settings>=2.7,<3",
   "jsonschema>=4.23,<5",
