@@ -639,7 +639,7 @@ wheels = [
 
 [[package]]
 name = "packet-foundry-collector"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/collector" }
 dependencies = [
     { name = "croniter" },
@@ -662,7 +662,7 @@ requires-dist = [
 
 [[package]]
 name = "packet-foundry-contracts"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/contracts" }
 dependencies = [
     { name = "pydantic" },
@@ -673,7 +673,7 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.10,<3" }]
 
 [[package]]
 name = "packet-foundry-factory"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/factory" }
 dependencies = [
     { name = "httpx" },
@@ -703,7 +703,7 @@ provides-extras = ["tracing"]
 
 [[package]]
 name = "packet-foundry-registry"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/registry" }
 dependencies = [
     { name = "alembic" },
@@ -730,7 +730,7 @@ requires-dist = [
 
 [[package]]
 name = "packet-foundry-warehouse"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "packages/warehouse" }
 dependencies = [
     { name = "alembic" },
@@ -759,7 +759,7 @@ requires-dist = [
 
 [[package]]
 name = "packet-foundry-workspace"
-version = "0.1.1"
+version = "0.1.2"
 source = { virtual = "." }
 
 [package.dev-dependencies]

@@ -66,6 +66,27 @@ async def test_trace_disabled_has_no_dependency_or_network():
     assert trace.client is None and not trace.tasks
 
 
+def test_managed_startup_tracing_credential_file(tmp_path, monkeypatch):
+    received = {}
+    class Client:
+        def __init__(self, **kwargs):
+            received.update(kwargs)
+    monkeypatch.setitem(sys.modules, "langsmith", SimpleNamespace(Client=Client))
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    path = tmp_path / "tracing.key"
+    path.write_text("private-fixture-key\n", encoding="utf-8")
+    config = TracingConfig(enabled=True, api_key_env=None, api_key_file=path,
+                           endpoint="https://tracing.example.test")
+    assert "private-fixture-key" not in config.model_dump_json()
+    assert Tracer(config).client is not None
+    assert received["api_key"] == "private-fixture-key"
+    assert received["api_url"] == config.endpoint
+    path.unlink()
+    assert Tracer(config).client is None
+    with pytest.raises(ValueError, match="choose"):
+        TracingConfig(enabled=True, api_key_file=path)
+
+
 async def test_media_attachments_use_sdk_bytes_contract_with_explicit_capture(tmp_path, monkeypatch):
     calls = []
     class Client:

@@ -142,6 +142,16 @@ def doctor(config: ConfigOption = None,
         except (ValueError, OSError, subprocess.TimeoutExpired, ProviderError):
             failures += 1
             typer.echo(f"FAIL: {name} credential or executable prerequisites; check installed CLI support")
+    if settings.tracing.enabled:
+        try:
+            settings.tracing.key()
+            import importlib.util
+            if importlib.util.find_spec("langsmith") is None:
+                raise ValueError("tracing extra is missing")
+            typer.echo("OK: LangSmith credential reference and SDK")
+        except (ValueError, OSError):
+            failures += 1
+            typer.echo("FAIL: LangSmith credential reference or tracing SDK is unavailable")
     if network:
         try:
             with httpx.Client(timeout=10, follow_redirects=False) as client:

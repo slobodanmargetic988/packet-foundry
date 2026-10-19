@@ -141,6 +141,9 @@ interactive shells. Provider CLI login must belong to this same account. Linux
 startup before login additionally requires the operator's user-lingering setup.
 Windows startup is at login; it does not require or install WSL. Use native provider
 executables on Windows. `uninstall-startup` removes only this factory's entry.
+The Windows task permits battery operation, removes the default execution time
+limit and retries a failed process up to three times at one-minute intervals.
+Machine sleep still suspends execution; the daemon handles reconnection on resume.
 
 CLI subprocesses run without shell interpolation, receive bounded stdin/stdout,
 and are killed as a process group (POSIX) or process tree (`taskkill`, Windows) on
@@ -161,6 +164,10 @@ Install `uv sync --package packet-foundry-factory --extra tracing`, enable
 only when inputs and outputs may be sent to the selected LangSmith endpoint; the
 default sends identifiers and timing metadata without source content. Both factories
 can use one project and retain distinct factory/profile/attempt identifiers.
+For managed startup, set `tracing.api_key_env=null` and
+`tracing.api_key_file` to a private local file containing only the key. This avoids
+depending on an interactive shell's environment. Protect that file with current-user
+permissions (NTFS ACLs on Windows); `doctor` checks the reference and SDK locally.
 
 With content capture enabled, input files and generated image/audio/video files are
 uploaded through the SDK's supported attachments interface. File reads/export happen

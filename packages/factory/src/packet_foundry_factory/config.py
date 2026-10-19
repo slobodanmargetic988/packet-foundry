@@ -79,10 +79,28 @@ class TracingConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     enabled: bool = False
     project: str = "packet-foundry"
-    api_key_env: str = "LANGSMITH_API_KEY"
+    api_key_env: str | None = "LANGSMITH_API_KEY"
+    api_key_file: Path | None = None
     endpoint: str = "https://api.smith.langchain.com"
     capture_content: bool = False
     max_attachment_bytes: int = Field(default=64 * 1024 * 1024, gt=0)
+
+    @model_validator(mode="after")
+    def check_credential_reference(self) -> TracingConfig:
+        if self.api_key_env and self.api_key_file:
+            raise ValueError("choose api_key_env or api_key_file for tracing")
+        if self.enabled and not self.api_key_env and not self.api_key_file:
+            raise ValueError("tracing requires a credential reference")
+        return self
+
+    def key(self) -> str:
+        if self.api_key_file:
+            value = self.api_key_file.expanduser().read_text(encoding="utf-8").strip()
+        else:
+            value = os.environ.get(self.api_key_env or "", "").strip()
+        if not value:
+            raise ValueError("missing LangSmith credential")
+        return value
 
 
 class FactoryConfig(BaseModel):

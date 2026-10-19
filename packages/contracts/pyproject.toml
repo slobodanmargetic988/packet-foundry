@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "packet-foundry-contracts"
-version = "0.1.1"
+version = "0.1.2"
 description = "Reusable Packet Foundry contracts service"
 requires-python = ">=3.12"
 license = "Apache-2.0"

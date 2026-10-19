@@ -76,7 +76,7 @@ def create_app(settings: WarehouseSettings | None = None, *, initialize_schema: 
                     await task
             repository.engine.dispose()
 
-    app = FastAPI(title="Packet Foundry Warehouse", version="0.1.1", lifespan=lifespan,
+    app = FastAPI(title="Packet Foundry Warehouse", version="0.1.2", lifespan=lifespan,
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.state.repository = repository
     app.state.settings = settings

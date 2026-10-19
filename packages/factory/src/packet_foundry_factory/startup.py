@@ -46,6 +46,15 @@ def install(config: Path, *, platform: str | None = None) -> Path:
         # One current-user task. Absolute native Python path; no powershell/shell interpolation.
         subprocess.run(["schtasks", "/Create", "/TN", "PacketFoundryFactory", "/SC", "ONLOGON",
                         "/TR", subprocess.list2cmdline(command), "/RL", "LIMITED", "/F"], check=True)
+        # Laptop defaults otherwise stop the task on battery or after three days.
+        # Fixed operator script: no configuration or credential values enter shell source.
+        subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command",
+            "$ErrorActionPreference='Stop'; "
+            "$settings=New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries "
+            "-DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) "
+            "-RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1); "
+            "Set-ScheduledTask -TaskName 'PacketFoundryFactory' -Settings $settings | Out-Null"],
+            check=True)
         subprocess.run(["schtasks", "/Run", "/TN", "PacketFoundryFactory"], check=True)
         return config
     raise ValueError("startup management supports Linux, macOS and Windows")

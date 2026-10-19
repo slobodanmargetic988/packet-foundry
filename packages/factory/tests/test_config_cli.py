@@ -86,3 +86,7 @@ def test_windows_startup_is_one_current_user_task(tmp_path, monkeypatch):
     assert calls[0][:3] == ["schtasks", "/Create", "/TN"]
     assert "SYSTEM" not in calls[0] and "/RU" not in calls[0]
     assert str(path) in calls[0][calls[0].index("/TR") + 1]
+    assert "-AllowStartIfOnBatteries" in calls[1][-1]
+    assert "-DontStopIfGoingOnBatteries" in calls[1][-1]
+    assert "-ExecutionTimeLimit ([TimeSpan]::Zero)" in calls[1][-1]
+    assert calls[2] == ["schtasks", "/Run", "/TN", "PacketFoundryFactory"]

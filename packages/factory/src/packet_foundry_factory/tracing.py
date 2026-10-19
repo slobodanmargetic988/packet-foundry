@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -25,11 +24,9 @@ class Tracer:
         if config.enabled:
             try:
                 from langsmith import Client
-                key = os.environ.get(config.api_key_env)
-                if not key:
-                    raise ValueError("missing LangSmith credential")
+                key = config.key()
                 self.client = Client(api_key=key, api_url=config.endpoint, timeout_ms=5000)
-            except (ImportError, ValueError):
+            except (ImportError, OSError, ValueError):
                 log.warning("LangSmith tracing configured but unavailable; install the tracing extra and configure its credential")
 
     def schedule(self, callback, **kwargs):
