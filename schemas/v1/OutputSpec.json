@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "SpecificationRef": {
+      "additionalProperties": false,
+      "properties": {
+        "spec_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+          "title": "Spec Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+          "title": "Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "spec_id",
+        "version",
+        "sha256"
+      ],
+      "title": "SpecificationRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "default": "text",
+      "enum": [
+        "text",
+        "json",
+        "image",
+        "audio",
+        "video"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "mime_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mime Type"
+    },
+    "json_schema": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Json Schema"
+    },
+    "schema_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpecificationRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "title": "OutputSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/slobodanmargetic988/packet-foundry/main/schemas/v1/OutputSpec.json"
+}

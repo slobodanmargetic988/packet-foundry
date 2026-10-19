@@ -1,0 +1,23 @@
+{
+  "backend": "ollama",
+  "model": "qwen2.5-coder:0.5b",
+  "output_kind": "text",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "started_at": "2026-10-19T21:18:46.241914+00:00",
+  "real_provider": true,
+  "status": "passed",
+  "result": {
+    "text": "packet-foundry-ok",
+    "json_data": null,
+    "artifacts": [],
+    "metadata": {
+      "model": "qwen2.5-coder:0.5b",
+      "backend": "ollama",
+      "usage": {}
+    }
+  },
+  "artifacts": [],
+  "duration_seconds": 2.535,
+  "finished_at": "2026-10-19T21:18:48.776674+00:00"
+}

@@ -1,0 +1,119 @@
+name: packet-foundry
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: foundry_admin
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/bootstrap.py init first}
+      FOUNDRY_WAREHOUSE_DB_PASSWORD: ${FOUNDRY_WAREHOUSE_DB_PASSWORD:?Missing warehouse DB credential}
+      FOUNDRY_REGISTRY_DB_PASSWORD: ${FOUNDRY_REGISTRY_DB_PASSWORD:?Missing registry DB credential}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/01-foundry.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foundry_admin -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  warehouse-migrate:
+    image: packet-foundry-warehouse:local
+    build: {context: ., target: warehouse}
+    command: ["migrate"]
+    environment: &warehouse-environment
+      FOUNDRY_WAREHOUSE_DATABASE_URL: postgresql+psycopg://foundry_warehouse:${FOUNDRY_WAREHOUSE_DB_PASSWORD}@postgres/foundry_warehouse
+      FOUNDRY_WAREHOUSE_ADMIN_TOKEN: ${FOUNDRY_WAREHOUSE_ADMIN_TOKEN}
+      FOUNDRY_WAREHOUSE_SERVICE_TOKEN: ${FOUNDRY_WAREHOUSE_SERVICE_TOKEN}
+      FOUNDRY_WAREHOUSE_ARTIFACT_PATH: /data/artifacts
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  warehouse:
+    image: packet-foundry-warehouse:local
+    build: {context: ., target: warehouse}
+    environment: *warehouse-environment
+    ports: ["127.0.0.1:8101:8101"]
+    volumes: ["warehouse-data:/data"]
+    depends_on:
+      warehouse-migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    restart: unless-stopped
+
+  registry-migrate:
+    image: packet-foundry-registry:local
+    build: {context: ., target: registry}
+    command: ["migrate"]
+    environment: &registry-environment
+      FOUNDRY_REGISTRY_DATABASE_URL: postgresql+psycopg://foundry_registry:${FOUNDRY_REGISTRY_DB_PASSWORD}@postgres/foundry_registry
+      FOUNDRY_REGISTRY_ADMIN_TOKEN: ${FOUNDRY_REGISTRY_ADMIN_TOKEN}
+      FOUNDRY_REGISTRY_WAREHOUSE_TOKEN: ${FOUNDRY_WAREHOUSE_SERVICE_TOKEN}
+      FOUNDRY_REGISTRY_WAREHOUSE_URL: http://warehouse:8101
+      FOUNDRY_REGISTRY_HOST: 0.0.0.0
+      FOUNDRY_REGISTRY_PORT: "8102"
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  registry:
+    image: packet-foundry-registry:local
+    build: {context: ., target: registry}
+    environment: *registry-environment
+    ports: ["127.0.0.1:8102:8102"]
+    depends_on:
+      registry-migrate: {condition: service_completed_successfully}
+      warehouse: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    restart: unless-stopped
+
+  collector:
+    profiles: [workers]
+    image: packet-foundry-collector:local
+    build: {context: ., target: collector}
+    env_file: .local/demo/collector.env
+    volumes:
+      - ./.local/demo/collector.json:/config/collector.json:ro
+      - ./.local/demo/input:/inputs:ro
+      - collector-data:/data
+    depends_on:
+      warehouse: {condition: service_healthy}
+    restart: unless-stopped
+
+  factory:
+    profiles: [workers]
+    image: packet-foundry-factory:local
+    build: {context: ., target: factory}
+    command: ["run", "--config", "/config/factory.json"]
+    env_file: .local/demo/factory.env
+    volumes:
+      - ./.local/demo/factory.json:/config/factory.json:ro
+      - factory-data:/data
+    depends_on:
+      registry: {condition: service_healthy}
+    restart: unless-stopped
+
+  demo-provider:
+    profiles: [demo]
+    image: packet-foundry-demo-provider:local
+    build: {context: ., target: demo-provider}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8099/health', timeout=3)"]
+      interval: 3s
+      timeout: 4s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  warehouse-data:
+  collector-data:
+  factory-data:

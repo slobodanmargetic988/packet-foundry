@@ -1,0 +1,10 @@
+{
+  "application_id": "example-app",
+  "warehouse_url": "http://127.0.0.1:8000",
+  "token_env": "FOUNDRY_APPLICATION_TOKEN",
+  "journal": "state/collector.sqlite3",
+  "input_dir": "input",
+  "output_dir": "output",
+  "send_schedule": {"cron": "0 8 * * *", "timezone": "Europe/Belgrade"},
+  "collect_schedule": {"interval_seconds": 30, "timezone": "UTC"}
+}

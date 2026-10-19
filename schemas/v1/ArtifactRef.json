@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size_bytes": {
+      "minimum": 0,
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "mime_type": {
+      "maxLength": 150,
+      "minLength": 1,
+      "title": "Mime Type",
+      "type": "string"
+    },
+    "filename": {
+      "anyOf": [
+        {
+          "maxLength": 255,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Filename"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "sha256",
+    "size_bytes",
+    "mime_type"
+  ],
+  "title": "ArtifactRef",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/slobodanmargetic988/packet-foundry/main/schemas/v1/ArtifactRef.json"
+}

@@ -1,0 +1,28 @@
+{
+  "backend": "codex",
+  "model": "gpt-6.1-sol",
+  "output_kind": "text",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "started_at": "2026-10-19T21:10:28.767897+00:00",
+  "real_provider": true,
+  "status": "passed",
+  "result": {
+    "text": "packet-foundry-ok",
+    "json_data": null,
+    "artifacts": [],
+    "metadata": {
+      "backend": "codex",
+      "usage": {
+        "input_tokens": 7836,
+        "cached_input_tokens": 3456,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8,
+        "reasoning_output_tokens": 0
+      }
+    }
+  },
+  "artifacts": [],
+  "duration_seconds": 5.092,
+  "finished_at": "2026-10-19T21:10:33.859833+00:00"
+}

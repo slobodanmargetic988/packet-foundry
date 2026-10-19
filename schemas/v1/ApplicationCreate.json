@@ -1,0 +1,26 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "application_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+      "title": "Application Id",
+      "type": "string"
+    },
+    "priority": {
+      "default": 50,
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Priority",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "application_id"
+  ],
+  "title": "ApplicationCreate",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/slobodanmargetic988/packet-foundry/main/schemas/v1/ApplicationCreate.json"
+}

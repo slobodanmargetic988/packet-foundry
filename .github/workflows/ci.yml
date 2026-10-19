@@ -1,0 +1,72 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: '3.12'
+      - run: uv sync --locked --all-packages --all-extras --group dev
+      - run: uv run --all-packages pytest packages/collector/tests packages/factory/tests -q
+      - run: uv build --all-packages
+      - run: uv run --all-packages python scripts/export_schemas.py --output schemas/v1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-and-schemas-${{ matrix.os }}
+          path: |
+            dist/*
+            schemas/v1/*
+
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: foundry_test
+          POSTGRES_PASSWORD: ci-only-database-password
+          POSTGRES_DB: foundrytest
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U foundry_test -d foundrytest"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      FOUNDRY_TEST_DATABASE_URL: postgresql+psycopg://foundry_test:ci-only-database-password@127.0.0.1:5432/foundrytest
+      FOUNDRY_TEST_REGISTRY_DATABASE_URL: postgresql+psycopg://foundry_test:ci-only-database-password@127.0.0.1:5432/registrytest
+      PGPASSWORD: ci-only-database-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: '3.12'
+      - run: uv sync --locked --all-packages --all-extras --group dev
+      - run: psql -h 127.0.0.1 -U foundry_test -d foundrytest -c 'CREATE DATABASE registrytest'
+      - run: uv run --all-packages ruff check .
+      - run: uv run --all-packages pytest -q
+
+  compose-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/bootstrap.py init
+      - run: docker compose --env-file .local/demo/stack.env up --build --wait postgres warehouse registry
+      - run: python scripts/bootstrap.py enroll
+      - run: docker compose --env-file .local/demo/stack.env --profile workers --profile demo up --build --wait
+      - run: python scripts/demo.py --timeout 180
+      - if: failure()
+        run: docker compose --env-file .local/demo/stack.env --profile workers --profile demo logs --tail 100
+      - if: always()
+        run: docker compose --env-file .local/demo/stack.env --profile workers --profile demo down --volumes

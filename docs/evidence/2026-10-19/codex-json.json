@@ -1,0 +1,30 @@
+{
+  "backend": "codex",
+  "model": "gpt-6.1-sol",
+  "output_kind": "json",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "started_at": "2026-10-19T21:04:14.606634+00:00",
+  "real_provider": true,
+  "status": "passed",
+  "result": {
+    "text": null,
+    "json_data": {
+      "ok": true
+    },
+    "artifacts": [],
+    "metadata": {
+      "backend": "codex",
+      "usage": {
+        "input_tokens": 7879,
+        "cached_input_tokens": 3456,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9,
+        "reasoning_output_tokens": 0
+      }
+    }
+  },
+  "artifacts": [],
+  "duration_seconds": 3.781,
+  "finished_at": "2026-10-19T21:04:18.387708+00:00"
+}

@@ -1,0 +1,55 @@
+{
+  "warehouse_url": "http://127.0.0.1:8101",
+  "host": "127.0.0.1",
+  "port": 8102,
+  "offline_after_seconds": 90,
+  "runpod_enabled": false,
+  "public_url": "https://registry.example.com",
+  "runpod_poll_seconds": 15,
+  "runpod_templates": [
+    {
+      "template_id": "local-text-gpu",
+      "enabled": false,
+      "max_factories": 1,
+      "startup_timeout_seconds": 600,
+      "idle_timeout_seconds": 300,
+      "shutdown_action": "stop",
+      "pod_parameters": {
+        "imageName": "operator/factory-with-ollama:replace-with-pinned-version",
+        "cloudType": "SECURE",
+        "computeType": "GPU",
+        "gpuCount": 1,
+        "gpuTypeIds": ["NVIDIA GeForce RTX 4090"],
+        "containerDiskInGb": 50,
+        "volumeInGb": 20,
+        "volumeMountPath": "/workspace"
+      },
+      "profiles": [
+        {
+          "profile_id": "ollama-text",
+          "model": "qwen3:4b",
+          "backend": "ollama",
+          "operations": ["generate"],
+          "output_kinds": ["text", "json"],
+          "input_kinds": ["text", "json"],
+          "resource_group": "gpu",
+          "supports_live": true,
+          "accept_experiments": false
+        }
+      ],
+      "resource_groups": {"gpu": 1},
+      "factory_config": {
+        "data_dir": "/workspace/packet-foundry",
+        "backends": {
+          "ollama": {
+            "kind": "ollama",
+            "base_url": "http://127.0.0.1:11434",
+            "auth_mode": "none"
+          }
+        }
+      },
+      "environment": {},
+      "environment_from": {}
+    }
+  ]
+}

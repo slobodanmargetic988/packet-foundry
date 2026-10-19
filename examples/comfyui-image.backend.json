@@ -1,0 +1,114 @@
+{
+  "kind": "comfyui",
+  "auth_mode": "none",
+  "base_url": "http://127.0.0.1:8188",
+  "timeout_seconds": 600,
+  "defaults": {
+    "seed": 1
+  },
+  "templates": {
+    "sd-image-v1": {
+      "workflow": {
+        "4": {
+          "class_type": "CheckpointLoaderSimple",
+          "inputs": {
+            "ckpt_name": "REPLACE_WITH_INSTALLED_CHECKPOINT.safetensors"
+          }
+        },
+        "5": {
+          "class_type": "EmptyLatentImage",
+          "inputs": {
+            "width": 512,
+            "height": 512,
+            "batch_size": 1
+          }
+        },
+        "6": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "",
+            "clip": [
+              "4",
+              1
+            ]
+          }
+        },
+        "7": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "blurry, low quality",
+            "clip": [
+              "4",
+              1
+            ]
+          }
+        },
+        "3": {
+          "class_type": "KSampler",
+          "inputs": {
+            "seed": 1,
+            "steps": 20,
+            "cfg": 7.0,
+            "sampler_name": "euler",
+            "scheduler": "normal",
+            "denoise": 1.0,
+            "model": [
+              "4",
+              0
+            ],
+            "positive": [
+              "6",
+              0
+            ],
+            "negative": [
+              "7",
+              0
+            ],
+            "latent_image": [
+              "5",
+              0
+            ]
+          }
+        },
+        "8": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "3",
+              0
+            ],
+            "vae": [
+              "4",
+              2
+            ]
+          }
+        },
+        "9": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "PacketFoundry",
+            "images": [
+              "8",
+              0
+            ]
+          }
+        }
+      },
+      "mappings": [
+        {
+          "node": "6",
+          "input": "text",
+          "source": "prompt"
+        },
+        {
+          "node": "3",
+          "input": "seed",
+          "source": "parameter:seed"
+        }
+      ],
+      "output_nodes": [
+        "9"
+      ]
+    }
+  }
+}

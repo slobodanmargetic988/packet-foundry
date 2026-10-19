@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-10-19T21:18:08.727753+00:00",
+  "runtime": "Linux ARM64 Docker on isolated Colima packet-foundry profile",
+  "services": [
+    "collector",
+    "warehouse",
+    "registry",
+    "factory"
+  ],
+  "postgres": "17, separate databases and roles",
+  "migrations": {
+    "warehouse_exit": 0,
+    "registry_exit": 0
+  },
+  "cross_database_role_connect_allowed": false,
+  "provider": "synthetic OpenAI-compatible HTTP fixture; no model inference",
+  "first_packet": "517e3afe-8ee3-4742-94a7-145579bfa8de",
+  "post_restart_packet": "a14072e9-a7d6-49c3-906c-adc15ba9678b",
+  "accepted_results": 2,
+  "collector_acknowledged": 2,
+  "factory_journal_acknowledged": 2,
+  "pending_submissions": 0,
+  "pending_consumption": 0,
+  "pending_acknowledgements": 0,
+  "warehouse_registry_recreated_successfully": true,
+  "factory_collector_restarted_successfully": true
+}

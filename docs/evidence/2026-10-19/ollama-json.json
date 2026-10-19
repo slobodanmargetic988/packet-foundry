@@ -1,0 +1,25 @@
+{
+  "backend": "ollama",
+  "model": "qwen2.5-coder:0.5b",
+  "output_kind": "json",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "started_at": "2026-10-19T21:18:46.241895+00:00",
+  "real_provider": true,
+  "status": "passed",
+  "result": {
+    "text": null,
+    "json_data": {
+      "ok": true
+    },
+    "artifacts": [],
+    "metadata": {
+      "model": "qwen2.5-coder:0.5b",
+      "backend": "ollama",
+      "usage": {}
+    }
+  },
+  "artifacts": [],
+  "duration_seconds": 2.267,
+  "finished_at": "2026-10-19T21:18:48.508492+00:00"
+}

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "packet-foundry-contracts"
+version = "0.1.0"
+description = "Reusable Packet Foundry contracts service"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+  "pydantic>=2.10,<3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/packet_foundry_contracts"]

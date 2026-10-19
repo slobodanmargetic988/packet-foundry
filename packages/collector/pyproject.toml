@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "packet-foundry-collector"
+version = "0.1.0"
+description = "Reusable Packet Foundry collector service"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+  "packet-foundry-contracts==0.1.0",
+  "httpx>=0.28,<1",
+  "croniter>=6,<7",
+  "tzdata>=2025.1",
+  "typer>=0.15,<1",
+  "platformdirs>=4,<5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/packet_foundry_collector"]
+
+[tool.uv.sources]
+packet-foundry-contracts = { workspace = true }
+
+[project.scripts]
+foundry-collector = "packet_foundry_collector.cli:main"

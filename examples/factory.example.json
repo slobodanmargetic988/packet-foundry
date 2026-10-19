@@ -1,0 +1,46 @@
+{
+  "registry_url": "http://127.0.0.1:8102",
+  "registry_token_env": "FOUNDRY_FACTORY_TOKEN",
+  "registration": {
+    "factory_id": "laptop-1",
+    "name": "My first laptop",
+    "resource_groups": {"local-gpu": 1, "subscription": 1, "cloud-api": 2},
+    "profiles": [
+      {
+        "profile_id": "local-text",
+        "model": "qwen3:4b",
+        "backend": "ollama-local",
+        "resource_group": "local-gpu",
+        "operations": ["generate"],
+        "output_kinds": ["text", "json"],
+        "input_kinds": ["text", "json"],
+        "supports_live": true,
+        "accept_experiments": true
+      },
+      {
+        "profile_id": "codex-text",
+        "model": "gpt-5.4",
+        "backend": "codex-login",
+        "resource_group": "subscription",
+        "output_kinds": ["text", "json"],
+        "input_kinds": ["text", "json"],
+        "supports_live": true
+      },
+      {
+        "profile_id": "gemini-images",
+        "model": "gemini-2.5-flash-image",
+        "backend": "google-image",
+        "resource_group": "cloud-api",
+        "output_kinds": ["image"],
+        "input_kinds": ["text", "json", "image"],
+        "supports_live": false
+      }
+    ]
+  },
+  "backends": {
+    "ollama-local": {"kind": "ollama", "auth_mode": "none", "base_url": "http://127.0.0.1:11434"},
+    "codex-login": {"kind": "codex", "auth_mode": "subscription", "timeout_seconds": 300},
+    "google-image": {"kind": "gemini_image", "api_key_env": "GEMINI_API_KEY", "timeout_seconds": 180}
+  },
+  "tracing": {"enabled": false, "project": "packet-foundry", "capture_content": false}
+}

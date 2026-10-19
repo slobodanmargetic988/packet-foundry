@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "packet-foundry-factory"
+version = "0.1.0"
+description = "Reusable Packet Foundry factory service"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+  "packet-foundry-contracts==0.1.0",
+  "httpx>=0.28,<1",
+  "pydantic-settings>=2.7,<3",
+  "jsonschema>=4.23,<5",
+  "typer>=0.15,<1",
+  "platformdirs>=4,<5",
+]
+
+[project.optional-dependencies]
+tracing = ["langsmith>=0.3,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/packet_foundry_factory"]
+
+[tool.uv.sources]
+packet-foundry-contracts = { workspace = true }
+
+[project.scripts]
+foundry-factory = "packet_foundry_factory.cli:main"

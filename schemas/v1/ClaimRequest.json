@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "ExecutionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "backend": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+          "title": "Backend",
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Operations",
+          "type": "array"
+        },
+        "output_kinds": {
+          "items": {
+            "enum": [
+              "text",
+              "json",
+              "image",
+              "audio",
+              "video"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Output Kinds",
+          "type": "array"
+        },
+        "input_kinds": {
+          "items": {
+            "enum": [
+              "text",
+              "json",
+              "image",
+              "audio",
+              "video",
+              "document"
+            ],
+            "type": "string"
+          },
+          "title": "Input Kinds",
+          "type": "array"
+        },
+        "resource_group": {
+          "default": "default",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+          "title": "Resource Group",
+          "type": "string"
+        },
+        "supports_live": {
+          "default": true,
+          "title": "Supports Live",
+          "type": "boolean"
+        },
+        "accept_experiments": {
+          "default": false,
+          "title": "Accept Experiments",
+          "type": "boolean"
+        },
+        "templates": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "title": "Templates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "profile_id",
+        "model",
+        "backend"
+      ],
+      "title": "ExecutionProfile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "factory_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$",
+      "title": "Factory Id",
+      "type": "string"
+    },
+    "profiles": {
+      "items": {
+        "$ref": "#/$defs/ExecutionProfile"
+      },
+      "title": "Profiles",
+      "type": "array"
+    },
+    "resource_groups": {
+      "patternProperties": {
+        "^[A-Za-z0-9_:-][A-Za-z0-9_.:-]*$": {
+          "maximum": 256,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Resource Groups",
+      "type": "object"
+    }
+  },
+  "required": [
+    "factory_id",
+    "profiles",
+    "resource_groups"
+  ],
+  "title": "ClaimRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/slobodanmargetic988/packet-foundry/main/schemas/v1/ClaimRequest.json"
+}
