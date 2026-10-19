@@ -1,0 +1,194 @@
+{
+  "checked_at": "2026-10-19T22:49:04.381154+00:00",
+  "status": "passed",
+  "scope": "Physical Windows factory installation, managed task, direct local-model probes and real browser-to-reviewable-draft batch",
+  "hardware": "personal Windows laptop",
+  "platform": {
+    "os": "Windows 10",
+    "build": "19045",
+    "python": "3.13.3",
+    "physical_device": true,
+    "wsl": false
+  },
+  "release": {
+    "tag": "v0.1.2",
+    "commit": "970af7b18c38c44d13d3f19e0ade65419dece849",
+    "bundle_sha256": "cb35254bbe86ec3a10aabcdb1b4e07ad6cf2878e302124fbc182a4a82e30a6f5",
+    "digest_matched_github_asset": true,
+    "digest_matched_published_sha256sums": true,
+    "wheel_sha256": {
+      "packet_foundry_contracts-0.1.2-py3-none-any.whl": "732f48490feb87ab45c8cbc93d2c6eb3e0c207cc97fd0c93910a07463db4899b",
+      "packet_foundry_factory-0.1.2-py3-none-any.whl": "88efe9fd16c0b238394e686cba8185aba3c1e0bac2ab0c98f424fc9565d9acc5"
+    },
+    "remote_wheel_hashes_matched": true,
+    "installed_factory_version": "0.1.2",
+    "installed_contracts_version": "0.1.2",
+    "isolated_environment": true
+  },
+  "startup": {
+    "task_installed": true,
+    "task_state": "Running",
+    "task_status": "currently running",
+    "current_user_only": true,
+    "privilege": "Limited",
+    "trigger": "user login",
+    "logon_type": "Interactive",
+    "already_logged_in_during_check": true,
+    "allow_on_battery": true,
+    "stop_on_battery": false,
+    "execution_time_limit": "PT0S",
+    "failure_restart_count": 3,
+    "failure_restart_interval": "PT1M",
+    "reboot_and_later_login_trigger_tested": false,
+    "sleep_resume_tested": false,
+    "network_interruption_tested": false
+  },
+  "registry": {
+    "https_health_passed": true,
+    "authenticated_registration_passed": true,
+    "online_heartbeat_observed": true,
+    "outbound_connections_only": true,
+    "factory_process_listener_count": 0,
+    "new_inbound_ports_opened": false,
+    "resource_group_capacity": 1,
+    "supports_live": false
+  },
+  "provider": {
+    "backend": "openai_compatible",
+    "engine": "llama.cpp Vulkan",
+    "model": "gemma-4-E2B-it-Q4_K_M.gguf",
+    "existing_local_runtime_reused": true,
+    "model_downloaded": false,
+    "existing_model_process_not_restarted": true,
+    "existing_assistant_peer_still_healthy": true,
+    "real_inference": true,
+    "new_benchmark": false,
+    "paid_inference": false,
+    "probes_checked_at": "2026-10-19T22:31:46.592892+00:00",
+    "synthetic_source_material": true,
+    "probes": [
+      {
+        "output_kind": "text",
+        "status": "passed",
+        "schema_validated": false,
+        "output": {
+          "text": "Packet Foundry is a reusable open-source Python backend used for queued content generation."
+        },
+        "usage": {
+          "completion_tokens": 276,
+          "prompt_tokens": 65,
+          "total_tokens": 341,
+          "prompt_tokens_details": {
+            "cached_tokens": 40
+          }
+        }
+      },
+      {
+        "output_kind": "json",
+        "status": "passed",
+        "schema_validated": true,
+        "output": {
+          "json_data": {
+            "title": "Packet Foundry",
+            "body": "Packet Foundry is a reusable open-source Python backend designed for queued content generation."
+          }
+        },
+        "usage": {
+          "completion_tokens": 378,
+          "prompt_tokens": 133,
+          "total_tokens": 511,
+          "prompt_tokens_details": {
+            "cached_tokens": 39
+          }
+        }
+      }
+    ]
+  },
+  "langsmith": {
+    "enabled": true,
+    "content_capture_enabled": true,
+    "credential_from_private_file": true,
+    "authenticated_native_api_read_passed": true,
+    "windows_application_attempt_trace_verified": true,
+    "windows_successful_attempt_runs_verified": 2,
+    "windows_failed_attempt_runs_verified": 2,
+    "successful_input_and_output_content_verified": true,
+    "failed_attempt_errors_and_input_content_verified": true,
+    "native_completed_batch_experiment_export_verified": true,
+    "native_completed_batch_experiment_run_count": 2,
+    "comparison_ui_visually_inspected": false,
+    "successful_trace_outputs_match_native_results": true
+  },
+  "remaining_checks": [
+    "Physical reboot/login, sleep/resume and network-loss recovery",
+    "Second personal computer deployment",
+    "LangSmith comparison UI visual inspection",
+    "Successful live checks for remaining configured external providers",
+    "Real image/audio/video generation, ComfyUI workflows and Runpod lifecycle"
+  ],
+  "application_end_to_end": {
+    "status": "passed",
+    "platform": "LinkedIn",
+    "browser_requested_drafts": 2,
+    "one_packet_per_draft": true,
+    "accepted_factory_outputs": 2,
+    "imported_application_drafts": 2,
+    "feed_ui_review_status": "Awaiting review",
+    "approved_posts": 0,
+    "queued_for_publishing": 0,
+    "collector_ack_verified": true,
+    "warehouse_outbox_remaining": 0,
+    "factory_pending_attempts": 0,
+    "exact_http_submission_replay_returned_same_job": true,
+    "replay_created_extra_batch": false,
+    "output_token_allowance_for_successful_packets": 2048,
+    "checks": [
+      "Native factory journal",
+      "Actual LangSmith attempt API records",
+      "Production browser and application API",
+      "Production Feed UI",
+      "Independent database state, collector ACK and outbox checks"
+    ],
+    "successful_outputs": [
+      {
+        "elapsed_seconds": 29.634528,
+        "output_text_chars": 1433,
+        "usage": {
+          "completion_tokens": 805,
+          "prompt_tokens": 210,
+          "total_tokens": 1015,
+          "prompt_tokens_details": {
+            "cached_tokens": 62
+          }
+        }
+      },
+      {
+        "elapsed_seconds": 26.090199,
+        "output_text_chars": 1311,
+        "usage": {
+          "completion_tokens": 724,
+          "prompt_tokens": 210,
+          "total_tokens": 934,
+          "prompt_tokens_details": {
+            "cached_tokens": 62
+          }
+        }
+      }
+    ]
+  },
+  "configuration_findings": [
+    {
+      "initial_output_token_allowance": 700,
+      "initial_packet_count": 2,
+      "initial_error_code": "incomplete_output",
+      "accepted_initial_outputs": 0,
+      "initial_failed_traces_closed": 2,
+      "initial_drafts_imported": 0,
+      "new_output_token_allowance": 2048,
+      "new_successful_packet_count": 2,
+      "old_packets_mutated": false,
+      "model_runtime_changed": false,
+      "finding": "The local model needed more completion budget than 700 tokens for these drafts. A new immutable batch succeeded with a larger per-packet allowance."
+    }
+  ]
+}
