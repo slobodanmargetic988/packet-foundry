@@ -7,7 +7,7 @@ license, and required notices here.
 
 The Qwen Image 2.1 workflow example adapts the MIT-licensed Comfy-Org workflow
 template. Its attribution and full MIT notice are preserved in
-[examples/comfyui-qwen-image21.NOTICE.md](examples/comfyui-qwen-image21.NOTICE.md).
+[example workflow notice](https://github.com/slobodanmargetic988/packet-foundry/blob/main/examples/comfyui-qwen-image21.NOTICE.md).
 The model manifest links the separate Qwen Research terms; no model weights or
 ComfyUI node implementation are included in the example.
 
