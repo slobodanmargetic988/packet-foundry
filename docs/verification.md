@@ -20,13 +20,14 @@ synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evide
 | Media trace transport | Actual SDK uploaded two synthetic PNG attachments; stored bytes were downloaded and matched | Proves transport, not model media generation or UI rendering |
 | Packaging | All five wheels build; independent factory installation from wheel bundle succeeds | Native installation tested in an isolated local tool environment |
 | Physical Windows factory | Public v0.1.2 checksums and installed versions verified; real llama.cpp text/JSON output, HTTPS registry registration/heartbeat and running current-user startup task | Existing local model runtime; user already logged in; physical recovery checks pending |
-| Physical Windows image factory | Actual ComfyUI FLUX.3 Image Klein Q4_K_M and Qwen Image 2.1 Q4_K_M each passed a consecutive red/blue prompt and seed 42/43 pair. Separate FLUX checks include the original image and a factory-only restart with no extra enqueue. All accepted results were visually checked, downloaded/ACKed and matched their LangSmith attachments | GTX 1060 6 GB functional checks; additional models, video/audio, OS and model-server recovery remain unverified |
+| Physical Windows image factory | Actual ComfyUI FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 each passed a consecutive red/blue prompt and seed 42/43 pair. Separate FLUX.3 checks include the original image and a factory-only restart with no extra enqueue. All accepted results were visually checked, downloaded/ACKed and matched their LangSmith attachments | GTX 1060 6 GB functional checks; additional models, video/audio, OS and model-server recovery remain unverified |
 | Real application delivery | Browser requested two LinkedIn drafts; physical Windows factory generated both, Collector imported them, and production Feed showed both as **Awaiting review**. Exact submission replay returned the same job and no extra batch | Two actual text packets; neither draft approved or queued for publishing |
 
 Container evidence: [deployment and restart summary](evidence/2026-10-19/compose.json).
 Native Windows evidence: [installation, startup and local generation](evidence/2026-10-20/windows-native.json).
 Native GPU image evidence: [real ComfyUI image delivery and trace attachment](evidence/2026-10-20/windows-comfyui-image.json).
 Qwen image evidence: [consecutive fresh-prompt generation and model-cache observations](evidence/2026-10-20/windows-qwen-image21.json).
+FLUX.1-dev evidence: [two real Q4_0 image deliveries and model-cache observations](evidence/2026-10-20/windows-flux1-dev.json).
 Real provider evidence below contains only synthetic smoke-test content, no credentials.
 
 ## Real generation and external integration status
@@ -39,7 +40,7 @@ Real provider evidence below contains only synthetic smoke-test content, no cred
 | Claude subscription CLI | Account reported organization-disabled subscription access; another probe timed out | Successful generation after account policy permits access |
 | Anthropic API | Protocol fixtures pass; no API credential configured for live checks | Real text/JSON generation |
 | Google image / Veo video | Protocol, binary handling, durable operation ID/poll/resume fixtures pass | Configured Google credential and real image/video outputs |
-| ComfyUI | **Image passed:** actual FLUX.3 Image Klein Q4_K_M and Qwen Image 2.1 Q4_K_M on Windows/GTX 1060, approved graphs, result download/checksum/ACK and matching LangSmith attachments. Both passed consecutive fresh-prompt generations. A separate FLUX factory-only restart resumed the same attempt/fence/prompt with one provider enqueue | Additional models, reference-image workflows, real audio/video, model-server restart/history loss and OS/network recovery |
+| ComfyUI | **Image passed:** actual FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 on Windows/GTX 1060, approved graphs, result download/checksum/ACK and matching LangSmith attachments. All three passed consecutive fresh-prompt generations. A separate FLUX.3 factory-only restart resumed the same attempt/fence/prompt with one provider enqueue | Additional models, reference-image workflows, real audio/video, model-server restart/history loss and OS/network recovery |
 | OpenAI-compatible server | **Text and JSON passed** on a physical Windows laptop against existing llama.cpp Vulkan, `gemma-4-E2B-it-Q4_K_M.gguf`; JSON also passed against Ollama's compatibility endpoint, `qwen2.5-coder:0.5b` | Other compatible inference servers and models |
 | LangSmith | **Passed:** previous comparison/attachment verification; physical-Windows text batch has two successful traces and a native two-run experiment. Accepted FLUX and Qwen image results have closed traces and matching decoded attachments. The initial FLUX image/recovery experiments share a dataset/case; the later fresh-prompt FLUX and Qwen pairs intentionally use different red/blue cases on the same dataset | API records and attachment bytes verified; comparison UI/media rendering uninspected. The deliberately killed factory left one original outputless trace unclosed; its recovered result has a separate closed trace. Optional attachment API MIME fields were null; object headers and PNG decoding passed |
 | Runpod | REST lifecycle, ownership, ambiguous create recovery, startup quarantine, idle drain/stop and leader coordination tested | Configured account/template; real pod start, work, drain and stop |
@@ -218,6 +219,49 @@ Qwen Research terms for non-commercial research/evaluation; the Foundry code
 license does not grant commercial model rights. Image editing, other Qwen
 quantizations and audio/video remain unverified.
 
+### FLUX.1-dev consecutive generation verification
+
+`city96/FLUX.1-dev-gguf:Q4_0` passed two consecutive 512×512 image requests through
+the same physical Windows factory and generic HTTP receiver. The deployed FP32
+graph uses GGUF diffusion and T5 encoders, CLIP-L, `FluxGuidance=3.5`, 20
+Euler/simple steps at sampler CFG 1, and CPU VAE decode. Actual logs confirmed
+CPU text-encoder load/offload and FP32 computation. All four model files matched
+their pinned lengths and hashes; model licenses and workflow attribution are in
+the [manifest](../examples/comfyui-flux1-dev.models.json) and
+[MIT workflow notice](../examples/comfyui-flux1-dev.NOTICE.md).
+
+Each packet succeeded in one attempt. Both PNGs were fully decoded, durably saved,
+ACKed and visually checked against their red/blue fox briefs. The red image was
+238,280 bytes with SHA-256
+`a19d96e02bf7e61bbaf28e22741b34538f9a486d4b24050442a97c95dc689349`;
+the blue image was 245,105 bytes with SHA-256
+`84bd6de315b6f9458b492d38b8b8fc764f39e4d6470236f5d8aec3442b7fbc90`.
+Each closed factory trace's attachment was independently decoded at 512×512 and
+matched the accepted artifact. Actual native experiment checks verified one
+successful run each, correct accepted trace/artifact provenance and intentionally
+different cases on the same dataset. The LangSmith media/comparison UI was not
+inspected.
+
+Only positive text red→blue and seed 42→43 changed, with the same process and no
+intervening model unload or cache clear. The first cached no nodes; the second
+cached nodes 1, 2, 6 and 8 while text node 3 and sampler node 7 recomputed, with
+all 20 steps observed. Server history intervals were **714.427 seconds** and
+**556.424 seconds**; factory traces were approximately 719.670 and 560.320 seconds
+with separate transport/polling boundaries. The
+[Windows guide](windows-comfyui.md#flux1-dev-example) distinguishes node receipt
+intervals from rounded sampler times. OS file caches were not cleared and
+background model downloads/other workloads were present. The cold run's lowest
+sampled available RAM was about 1.13 GiB; memory peaks were not measured
+continuously. These are functional observations, not controlled performance or
+hardware recommendations.
+
+The diffusion checkpoint retains the linked FLUX.1-dev Non-Commercial model terms;
+these are evaluation trials, independently of Foundry's Apache-2.0 code license.
+The receiver was a generic HTTP harness, so Collector SDK and Media Presence image
+import were not exercised. Other quantizations, reference-image/editing workflows,
+audio/video and OS/model-server/network recovery remain unverified. See the
+[sanitized complete evidence](evidence/2026-10-20/windows-flux1-dev.json).
+
 ## Reproduce
 
 ```text
@@ -251,5 +295,5 @@ Real audio/video generation, other model combinations and cloud lifecycle checks
 remain release verification work. The Windows text factory, two-draft application
 delivery and Windows GPU image packets have been verified end to end, including
 factory-only recovery during FLUX generation and consecutive fresh-prompt pairs
-for FLUX and Qwen. OS/model-server/network recovery
+for FLUX.3, Qwen and FLUX.1-dev. OS/model-server/network recovery
 and visual inspection of the LangSmith comparison UI remain pending.

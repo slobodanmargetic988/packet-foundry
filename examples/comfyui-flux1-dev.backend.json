@@ -1,0 +1,141 @@
+{
+  "kind": "comfyui",
+  "auth_mode": "none",
+  "base_url": "http://127.0.0.1:8188",
+  "timeout_seconds": 21600,
+  "poll_seconds": 3,
+  "defaults": {
+    "seed": 42
+  },
+  "templates": {
+    "flux1-dev-q4-512-v1": {
+      "workflow": {
+        "1": {
+          "class_type": "UnetLoaderGGUFAdvanced",
+          "inputs": {
+            "unet_name": "flux1-dev-Q4_0.gguf",
+            "dequant_dtype": "float32",
+            "patch_dtype": "float32",
+            "patch_on_device": false
+          }
+        },
+        "2": {
+          "class_type": "DualCLIPLoaderGGUF",
+          "inputs": {
+            "clip_name1": "clip_l.safetensors",
+            "clip_name2": "t5-v1_1-xxl-encoder-Q4_K_M.gguf",
+            "type": "flux"
+          }
+        },
+        "3": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "clip": [
+              "2",
+              0
+            ],
+            "text": ""
+          }
+        },
+        "4": {
+          "class_type": "FluxGuidance",
+          "inputs": {
+            "conditioning": [
+              "3",
+              0
+            ],
+            "guidance": 3.5
+          }
+        },
+        "5": {
+          "class_type": "ConditioningZeroOut",
+          "inputs": {
+            "conditioning": [
+              "3",
+              0
+            ]
+          }
+        },
+        "6": {
+          "class_type": "EmptySD3LatentImage",
+          "inputs": {
+            "width": 512,
+            "height": 512,
+            "batch_size": 1
+          }
+        },
+        "7": {
+          "class_type": "KSampler",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "4",
+              0
+            ],
+            "negative": [
+              "5",
+              0
+            ],
+            "latent_image": [
+              "6",
+              0
+            ],
+            "seed": 42,
+            "steps": 20,
+            "cfg": 1.0,
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "denoise": 1.0
+          }
+        },
+        "8": {
+          "class_type": "VAELoader",
+          "inputs": {
+            "vae_name": "ae.safetensors"
+          }
+        },
+        "9": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "7",
+              0
+            ],
+            "vae": [
+              "8",
+              0
+            ]
+          }
+        },
+        "10": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "images": [
+              "9",
+              0
+            ],
+            "filename_prefix": "PacketFoundry-Flux1Dev"
+          }
+        }
+      },
+      "mappings": [
+        {
+          "node": "3",
+          "input": "text",
+          "source": "prompt"
+        },
+        {
+          "node": "7",
+          "input": "seed",
+          "source": "parameter:seed"
+        }
+      ],
+      "output_nodes": [
+        "10"
+      ]
+    }
+  }
+}

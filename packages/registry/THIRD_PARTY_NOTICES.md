@@ -11,6 +11,12 @@ template. Its attribution and full MIT notice are preserved in
 The model manifest links the separate Qwen Research terms; no model weights or
 ComfyUI node implementation are included in the example.
 
+The FLUX.1-dev workflow example also adapts an MIT-licensed Comfy-Org workflow.
+Its attribution and full MIT notice are preserved in
+[FLUX.1-dev workflow notice](https://github.com/slobodanmargetic988/packet-foundry/blob/main/examples/comfyui-flux1-dev.NOTICE.md).
+Its model manifest records the separate FLUX.1-dev, T5, CLIP-L and AE repository
+license declarations; no model weights or node implementation are included.
+
 Runtime dependencies and optional integrations retain their own licenses. Their
 packages include their respective license metadata; distributing an assembled image
 or environment also requires preserving applicable dependency notices. The lockfile

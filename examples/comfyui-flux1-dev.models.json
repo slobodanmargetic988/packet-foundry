@@ -1,0 +1,73 @@
+{
+  "description": "Pinned model artifacts for the verified Windows FLUX.1-dev Q4_0 example. No weights are included; review each upstream model term before downloading or using them.",
+  "model_terms": {
+    "scope": "Each weight retains its own upstream terms, separately from Packet Foundry code. The selected diffusion checkpoint uses the FLUX.1 [dev] Non-Commercial License; these are evaluation trials, not a grant of commercial model-use rights.",
+    "diffusion_license_url": "https://huggingface.co/city96/FLUX.1-dev-gguf/blob/3c60ac659f4b1f2ab3ca8bd4488272069b36a148/LICENSE.md",
+    "dependency_license_declarations_are_repository_specific": true,
+    "weights_distributed_here": false
+  },
+  "models": [
+    {
+      "repository": "city96/FLUX.1-dev-gguf",
+      "revision": "3c60ac659f4b1f2ab3ca8bd4488272069b36a148",
+      "filename": "flux1-dev-Q4_0.gguf",
+      "destination_relative_to_comfyui": "models/diffusion_models/flux1-dev-Q4_0.gguf",
+      "size_bytes": 6791167136,
+      "sha256": "2867e9575640d80ccbcbf65010659a4d09e676a034637bc37eac7f2531c46e90",
+      "url": "https://huggingface.co/city96/FLUX.1-dev-gguf/resolve/3c60ac659f4b1f2ab3ca8bd4488272069b36a148/flux1-dev-Q4_0.gguf",
+      "declared_license": "FLUX.1 [dev] Non-Commercial License",
+      "license_declaration_url": "https://huggingface.co/city96/FLUX.1-dev-gguf/blob/3c60ac659f4b1f2ab3ca8bd4488272069b36a148/LICENSE.md",
+      "provenance": "Direct GGUF conversion of black-forest-labs/FLUX.1-dev by city96; the quantizer explicitly retains the original model restrictions."
+    },
+    {
+      "repository": "city96/t5-v1_1-xxl-encoder-gguf",
+      "revision": "005a6ea51a7d0b84d677b3e633bb52a8c85a83d9",
+      "filename": "t5-v1_1-xxl-encoder-Q4_K_M.gguf",
+      "destination_relative_to_comfyui": "models/text_encoders/t5-v1_1-xxl-encoder-Q4_K_M.gguf",
+      "size_bytes": 2896123072,
+      "sha256": "6be2b0b7e2de7cf2919340c88cb802a103a997ce46c53131cec91958c1db1af4",
+      "url": "https://huggingface.co/city96/t5-v1_1-xxl-encoder-gguf/resolve/005a6ea51a7d0b84d677b3e633bb52a8c85a83d9/t5-v1_1-xxl-encoder-Q4_K_M.gguf",
+      "declared_license": "Apache-2.0",
+      "license_declaration_url": "https://huggingface.co/city96/t5-v1_1-xxl-encoder-gguf/blob/005a6ea51a7d0b84d677b3e633bb52a8c85a83d9/README.md",
+      "provenance": "Google T5 v1.1 XXL encoder converted to GGUF by city96. The selected Q4_K_M is an evaluation under memory constraints; the converter recommends Q5_K_M or larger for best results."
+    },
+    {
+      "repository": "comfyanonymous/flux_text_encoders",
+      "revision": "6af2a98e3f615bdfa612fbd85da93d1ed5f69ef5",
+      "filename": "clip_l.safetensors",
+      "destination_relative_to_comfyui": "models/text_encoders/clip_l.safetensors",
+      "size_bytes": 246144152,
+      "sha256": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/6af2a98e3f615bdfa612fbd85da93d1ed5f69ef5/clip_l.safetensors",
+      "declared_license": "Apache-2.0",
+      "license_declaration_url": "https://huggingface.co/comfyanonymous/flux_text_encoders/blob/6af2a98e3f615bdfa612fbd85da93d1ed5f69ef5/README.md",
+      "provenance": "Published CLIP-L safetensors in the comfyanonymous FLUX text-encoder collection. The pinned official Comfy-Org FLUX dev workflow references this same collection/file. Apache-2.0 is the direct repository card declaration."
+    },
+    {
+      "repository": "Comfy-Org/Lumina_Image_2.0_Repackaged",
+      "revision": "5b072540ef86570fecb8249c505f23d5bdeb88cd",
+      "filename": "split_files/vae/ae.safetensors",
+      "destination_relative_to_comfyui": "models/vae/ae.safetensors",
+      "size_bytes": 335304388,
+      "sha256": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38",
+      "url": "https://huggingface.co/Comfy-Org/Lumina_Image_2.0_Repackaged/resolve/5b072540ef86570fecb8249c505f23d5bdeb88cd/split_files/vae/ae.safetensors",
+      "declared_license": "Apache-2.0",
+      "license_declaration_url": "https://huggingface.co/Comfy-Org/Lumina_Image_2.0_Repackaged/blob/5b072540ef86570fecb8249c505f23d5bdeb88cd/README.md",
+      "provenance": "Published AE safetensors in the official Comfy-Org Lumina Image 2.0 repackaged collection. The pinned official Comfy-Org FLUX dev workflow explicitly references this same source/file. Apache-2.0 is the direct repository card declaration."
+    }
+  ],
+  "workflow_sources": [
+    {
+      "name": "Comfy-Org FLUX dev text-to-image template",
+      "revision": "46e060ea88eb07adecf07197ec384c54a70e030c",
+      "url": "https://github.com/Comfy-Org/workflow_templates/blob/46e060ea88eb07adecf07197ec384c54a70e030c/templates/flux_dev_full_text_to_image.json",
+      "license": "MIT",
+      "notice_file": "comfyui-flux1-dev.NOTICE.md"
+    },
+    {
+      "name": "ComfyUI-GGUF custom nodes (runtime dependency only; source not redistributed here)",
+      "revision": "6ea2651e7df66d7585f6ffee804b20e92fb38b8a",
+      "url": "https://github.com/city96/ComfyUI-GGUF/tree/6ea2651e7df66d7585f6ffee804b20e92fb38b8a"
+    }
+  ]
+}

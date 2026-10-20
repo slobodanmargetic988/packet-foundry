@@ -1,14 +1,16 @@
 # Native Windows ComfyUI image factory
 
-This guide reproduces verified FLUX.3 Image Klein step-distilled Q4_K_M and Qwen
-Image 2.1 Q4_K_M configurations on a Windows 10 GTX 1060 with 6 GB VRAM. Real
+This guide reproduces verified FLUX.3 Image Klein step-distilled Q4_K_M, Qwen
+Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 configurations on a Windows 10 GTX 1060 with
+6 GB VRAM. Real
 packets completed through Factory, Registry and Warehouse to a private generic
 HTTP verification receiver, and the downloaded PNGs matched their LangSmith
 attachments. See [FLUX evidence](evidence/2026-10-20/windows-comfyui-image.json)
-and [Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json).
+and [Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json), plus
+[FLUX.1-dev evidence](evidence/2026-10-20/windows-flux1-dev.json).
 These are functional examples, not guarantees for every 6 GB GPU or another model.
 A sixteen-step FLUX packet also completed after a factory-only process restart
-while the separate ComfyUI process remained running. Both models also passed
+while the separate ComfyUI process remained running. All three models also passed
 consecutive generations with a changed positive prompt and seed.
 
 Use separate native environments for the factory and ComfyUI. The factory needs
@@ -270,6 +272,70 @@ OS caching and substantial observed variation make these functional observations
 not a throughput benchmark or time guarantee. Resource samples are not continuous
 memory peaks. A previous seed-only repeat completed locally but lost its lease
 during a network failure; it is excluded from this successful delivery pair.
+
+## FLUX.1-dev example
+
+The original FLUX.1-dev model, quantized as Q4_0, passed two consecutive real
+512×512 image requests on this same runtime. This is a different model and graph
+from FLUX.3 Klein. Use the [backend example](../examples/comfyui-flux1-dev.backend.json)
+and [four-file manifest](../examples/comfyui-flux1-dev.models.json):
+
+- `flux1-dev-Q4_0.gguf` in `models/diffusion_models`.
+- `clip_l.safetensors` and `t5-v1_1-xxl-encoder-Q4_K_M.gguf` in `models/text_encoders`.
+- `ae.safetensors` in `models/vae`.
+
+The manifest pins the exact download repositories, revisions, lengths, hashes and
+their license declarations. The diffusion conversion retains the
+[FLUX.1 [dev] Non-Commercial License](https://huggingface.co/city96/FLUX.1-dev-gguf/blob/3c60ac659f4b1f2ab3ca8bd4488272069b36a148/LICENSE.md).
+These are evaluation trials; the Foundry code license does not grant commercial
+model-use rights. The T5 converter, CLIP collection and AE collection declare
+Apache-2.0 in their respective pinned cards. The official pinned Comfy-Org FLUX
+workflow itself references the published CLIP-L and AE file sources used here.
+The [workflow attribution](../examples/comfyui-flux1-dev.NOTICE.md) preserves the
+upstream MIT notice and describes the graph adaptations. No weights or ComfyUI
+node implementation are bundled in the example.
+
+The graph uses FP32 advanced GGUF dequantization/patches,
+`DualCLIPLoaderGGUF` with `type=flux`, `FluxGuidance=3.5`, an
+`EmptySD3LatentImage` 16-channel latent, 20 Euler/simple steps at sampler CFG 1,
+CPU VAE decode and `SaveImage`. `DualCLIPLoaderGGUF` has no `device` input. The
+tested `--disable-dynamic-vram --lowvram --fp32-text-enc` startup selected CPU
+text encoding; the actual log confirmed CPU load/offload and FP32. Keep the server
+command above and verify that placement rather than adding an unsupported node
+field. The pinned T5 converter recommends larger quantizations for best results;
+this Q4_K_M selection is the actual constrained-hardware functional check.
+
+Merge the template `flux1-dev-q4-512-v1` into the backend's `templates` and
+advertise model `city96/FLUX.1-dev-gguf:Q4_0`, profile `flux1-dev-q4-512`, with
+the same capacity-one GPU resource group. Its only packet mappings are text and
+seed. Verify all ten graph classes and the four filenames before submitting.
+
+Both images passed visual inspection, decoding, durable receiver save, ACK,
+matching closed LangSmith attachments and native experiment provenance. Only the
+color word red→blue and seed 42→43 changed between them; the same process and
+model/profile settings remained in place. The first followed model/node-cache
+clearing, without flushing OS file caches. The second cached loader/latent nodes
+1, 2, 6 and 8, while text-conditioning node 3 and sampler node 7 recomputed with
+all 20 steps observed.
+
+| Observation | Red brief, seed 42, model/node state cleared | Blue brief, seed 43, model/node state preserved |
+| --- | --- | --- |
+| Total server execution | 714.427 s | 556.424 s |
+| Text-conditioning node | 144.752 s | 150.958 s |
+| KSampler node, including model preparation | 462.047 s | 385.512 s |
+| CPU VAE decode node | 82.802 s | 18.897 s |
+| Final sampler progress-bar elapsed, rounded | about 366 s | about 383 s |
+
+Server totals, node receipt intervals and rounded sampler elapsed have different
+boundaries. Node intervals can include loading, lazy materialization and casting;
+they do not isolate pure encoding or weight-loading time. Low-priority model
+downloads and existing workloads were present. The cold run's lowest sampled
+available RAM was about 1.13 GiB; this successful request is not a general memory
+fit recommendation. GPU/RAM samples are not continuous peaks. The native
+experiments share a dataset with intentionally different red/blue cases;
+neither quality ranking nor controlled performance results are claimed. The
+LangSmith media/comparison UI and application-specific image import were not
+tested here.
 
 ## Login startup and verification limits
 
