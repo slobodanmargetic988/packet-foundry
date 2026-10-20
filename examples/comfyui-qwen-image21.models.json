@@ -1,0 +1,57 @@
+{
+  "description": "Pinned model artifacts for the Windows Qwen Image 2.1 Q4_K_M example. Weights are not included; review the upstream model terms before downloading or using them.",
+  "license": {
+    "name": "Qwen RESEARCH LICENSE AGREEMENT",
+    "identifier": "qwen-research",
+    "url": "https://huggingface.co/Qwen/Qwen-Image-2.1/blob/f52e6a529129fff6a994469561673ea45a84043d/LICENSE",
+    "scope": "Model weights have separate terms from Packet Foundry code. The upstream terms permit non-commercial research/evaluation and require a separate license for commercial use."
+  },
+  "models": [
+    {
+      "repository": "chfm/Qwen-Image-2.1-GGUF",
+      "revision": "fc008ac98b20f38b7cd338b2506aab2fdc03dfd1",
+      "filename": "qwen_image_2.1_Q4_K_M.gguf",
+      "destination_relative_to_comfyui": "models/diffusion_models/qwen_image_2.1_Q4_K_M.gguf",
+      "size_bytes": 4189343904,
+      "sha256": "dc956c958fbfa1d5c64ec316d7e865283d17d97a9eb332a4a74a4d63afaae9a5",
+      "url": "https://huggingface.co/chfm/Qwen-Image-2.1-GGUF/resolve/fc008ac98b20f38b7cd338b2506aab2fdc03dfd1/qwen_image_2.1_Q4_K_M.gguf"
+    },
+    {
+      "repository": "Comfy-Org/Qwen-Image-2.1",
+      "revision": "a8342359c61979b06a8dafb1a47991fe1f30e994",
+      "filename": "text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "destination_relative_to_comfyui": "models/text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "size_bytes": 9350798360,
+      "sha256": "8bfd0f6e12abf2d2d697ecc888e5e90b0d6741d6708f05799f53afa560452e8f",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/a8342359c61979b06a8dafb1a47991fe1f30e994/text_encoders/qwen3vl_8b_int8_convrot.safetensors"
+    },
+    {
+      "repository": "Comfy-Org/Qwen-Image-2.1",
+      "revision": "a8342359c61979b06a8dafb1a47991fe1f30e994",
+      "filename": "vae/qwen_image_2.1_vae_bf16.safetensors",
+      "destination_relative_to_comfyui": "models/vae/qwen_image_2.1_vae_bf16.safetensors",
+      "size_bytes": 675509688,
+      "sha256": "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/a8342359c61979b06a8dafb1a47991fe1f30e994/vae/qwen_image_2.1_vae_bf16.safetensors"
+    }
+  ],
+  "workflow_sources": [
+    {
+      "name": "Comfy-Org Qwen Image 2.1 text-to-image template",
+      "revision": "46e060ea88eb07adecf07197ec384c54a70e030c",
+      "url": "https://github.com/Comfy-Org/workflow_templates/blob/46e060ea88eb07adecf07197ec384c54a70e030c/templates/image_qwen_image_2_1_t2i.json",
+      "license": "MIT",
+      "notice_file": "comfyui-qwen-image21.NOTICE.md"
+    },
+    {
+      "name": "Qwen Image 2.1 core node implementation (reference only; no implementation code copied)",
+      "revision": "63be2f9b82ad0dac88a7ceaa28a9cf3154125a18",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/63be2f9b82ad0dac88a7ceaa28a9cf3154125a18/comfy_extras/nodes_qwen.py"
+    },
+    {
+      "name": "Q4_K_M quantization model card",
+      "revision": "fc008ac98b20f38b7cd338b2506aab2fdc03dfd1",
+      "url": "https://huggingface.co/chfm/Qwen-Image-2.1-GGUF/blob/fc008ac98b20f38b7cd338b2506aab2fdc03dfd1/README.md"
+    }
+  ]
+}

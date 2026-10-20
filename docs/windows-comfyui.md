@@ -1,13 +1,15 @@
 # Native Windows ComfyUI image factory
 
-This guide reproduces one verified configuration: FLUX.3 Image Klein step-distilled
-Q4_K_M, 512×512, four steps, on a Windows 10 GTX 1060 with 6 GB VRAM. One real packet
-completed through Factory, Registry and Warehouse to a private generic HTTP
-verification receiver, and the downloaded PNG matched
-its LangSmith attachment. See [sanitized evidence](evidence/2026-10-20/windows-comfyui-image.json).
-This is a functional example, not a guarantee for every 6 GB GPU or another model.
-A second sixteen-step packet also completed after a factory-only process restart
-while the separate ComfyUI process remained running.
+This guide reproduces verified FLUX.3 Image Klein step-distilled Q4_K_M and Qwen
+Image 2.1 Q4_K_M configurations on a Windows 10 GTX 1060 with 6 GB VRAM. Real
+packets completed through Factory, Registry and Warehouse to a private generic
+HTTP verification receiver, and the downloaded PNGs matched their LangSmith
+attachments. See [FLUX evidence](evidence/2026-10-20/windows-comfyui-image.json)
+and [Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json).
+These are functional examples, not guarantees for every 6 GB GPU or another model.
+A sixteen-step FLUX packet also completed after a factory-only process restart
+while the separate ComfyUI process remained running. The Qwen check includes two
+consecutive generations with a changed prompt and seed.
 
 Use separate native environments for the factory and ComfyUI. The factory needs
 only its outbound registry connection and the local ComfyUI server; the machine
@@ -152,6 +154,83 @@ and generated output may be sent there. See [tracing configuration](factory.md#o
 The verified cold run took 127.90 seconds in ComfyUI, including loading, prompt
 encoding and decoding. Its factory trace lasted about 130 seconds. These values
 describe one request, not warm throughput, a model comparison or a time guarantee.
+
+## Qwen Image 2.1 example
+
+Qwen Image 2.1 Q4_K_M produced two consecutive, visually checked 512×512 PNGs
+through the same Windows factory and receiver. Both completed on their first
+attempt, were downloaded/ACKed, and matched their independently decoded LangSmith
+attachments. Native experiment API checks verified one successful run per batch
+with the expected model, seed, profile, accepted trace and artifact links. The
+[Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json) keeps an earlier
+successful generation separate from this clean pair.
+
+Use the same pinned ComfyUI/GGUF runtime and conservative server command above.
+The [Qwen model manifest](../examples/comfyui-qwen-image21.models.json) pins three
+different weights: the `chfm/Qwen-Image-2.1-GGUF` Q4_K_M diffusion model,
+`qwen3vl_8b_int8_convrot.safetensors` CPU text encoder, and
+`qwen_image_2.1_vae_bf16.safetensors`. The VAE's filename describes its stored
+weights; the tested launch runs its computation in FP32 on CPU.
+
+These weights use the
+[Qwen RESEARCH LICENSE AGREEMENT](https://huggingface.co/Qwen/Qwen-Image-2.1/blob/f52e6a529129fff6a994469561673ea45a84043d/LICENSE),
+which permits non-commercial research/evaluation and requires a separate license
+for commercial use. These checks are evaluation trials. Packet Foundry's Apache-2.0
+license does not change the weights' terms. The graph follows the upstream
+[Comfy-Org Qwen text-to-image workflow](https://github.com/Comfy-Org/workflow_templates/blob/46e060ea88eb07adecf07197ec384c54a70e030c/templates/image_qwen_image_2_1_t2i.json),
+with the adaptations and MIT notice recorded in the
+[example attribution](../examples/comfyui-qwen-image21.NOTICE.md).
+
+Put the [Qwen backend example](../examples/comfyui-qwen-image21.backend.json)
+under the configured backend alias, or merge its template into the existing
+ComfyUI backend's `templates`. Do not replace another model's templates when
+adding this one. Advertise the image-only model
+`chfm/Qwen-Image-2.1-GGUF:Q4_K_M`, template `qwen-image21-q4-512-v1`, with the
+same GPU resource group and capacity one as the FLUX profile. Check that all
+eight graph classes and the exact three model filenames are available before
+submitting a packet.
+
+The graph uses FP32 advanced GGUF dequantization/patches, `CLIPLoader` with
+`type=qwen_image` and `device=cpu`, and core `TextEncodeQwenImage21`. With no
+reference images and resolution 512, that node provides positive conditioning,
+negative conditioning and the `[1, 64, 32, 32]` latent directly to the sampler.
+Do not substitute the FLUX latent node. Sampling uses 25 Euler/simple steps,
+CFG 1, followed by CPU VAE decode and `SaveImage`. The model's prefix KV cache
+is deliberately `off`; this is separate from ComfyUI's node/model output cache.
+Only prompt and seed are mapped from packets. The six-hour backend deadline is
+the actual functional configuration, not a prediction of generation time.
+
+The clean first request ran after a supported model unload and node-cache clear;
+no cached nodes were reported. The operating system's file cache was not cleared,
+so this is cold model/node state, not cold disk. The second request changes the
+fox brief from red to blue and seed 42 to 43 without a model unload or process
+restart. This requires fresh text encoding and sampling while allowing loader/model
+objects to be reused. It does not guarantee that all weights remain on the GPU.
+
+The server's execution-start/success history gives these intervals:
+
+| Observation | Red brief, seed 42, model/node state cleared | Blue brief, seed 43, model/node state preserved |
+| --- | --- | --- |
+| Total server execution | 711.760 s | 390.925 s |
+| Text-encoding node | 367.881 s | 144.801 s |
+| KSampler node, including model preparation | 273.813 s | 215.816 s |
+| CPU VAE decode node | 36.509 s | 29.350 s |
+| Final sampler progress-bar elapsed, rounded | about 219 s | about 215 s |
+
+Only total execution uses server timestamp boundaries. Node intervals use observer
+receipt times, include preparation inside the node, and are not exact weight-loading
+timings. The second run reused loader/configuration nodes 1, 2, 4 and 5; text node
+3 and sampler node 6 executed again, with all 25 sampler progress events observed.
+Its output was a blue fox rather than the first run's red fox. The changed prompts
+have intentionally different experiment case identities on the same dataset;
+this is not a same-case quality comparison. LangSmith's media and comparison UI
+were not inspected.
+
+An earlier separate successful request took 474.45 seconds. Background activity,
+OS caching and substantial observed variation make these functional observations,
+not a throughput benchmark or time guarantee. Resource samples are not continuous
+memory peaks. A previous seed-only repeat completed locally but lost its lease
+during a network failure; it is excluded from this successful delivery pair.
 
 ## Login startup and verification limits
 
