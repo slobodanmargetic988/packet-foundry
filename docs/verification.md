@@ -1,7 +1,7 @@
 # Verification matrix
 
-Status as of **20 October 2026**: working implementation, with a physical Windows
-factory deployed from public release **v0.1.2**. The four-service
+Status as of **20 October 2026**: working implementation, with two physical Windows
+factories deployed from public release **v0.1.2** for real text/JSON and image work. The four-service
 stack is exercised end to end, including real containers and PostgreSQL. Complete
 live verification of every media/provider integration is still pending. Do not treat
 synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evidence.
@@ -20,10 +20,12 @@ synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evide
 | Media trace transport | Actual SDK uploaded two synthetic PNG attachments; stored bytes were downloaded and matched | Proves transport, not model media generation or UI rendering |
 | Packaging | All five wheels build; independent factory installation from wheel bundle succeeds | Native installation tested in an isolated local tool environment |
 | Physical Windows factory | Public v0.1.2 checksums and installed versions verified; real llama.cpp text/JSON output, HTTPS registry registration/heartbeat and running current-user startup task | Existing local model runtime; user already logged in; physical recovery checks pending |
+| Physical Windows image factory | Actual ComfyUI FLUX.3 Image Klein Q4_K_M generated two visually checked 512×512 PNGs; each succeeded in one accepted attempt through Registry/Warehouse, was downloaded/ACKed, and matched its LangSmith attachment. The second survived a factory-only process restart without another provider enqueue | GTX 1060 6 GB functional checks; other models, video/audio, OS and model-server recovery remain unverified |
 | Real application delivery | Browser requested two LinkedIn drafts; physical Windows factory generated both, Collector imported them, and production Feed showed both as **Awaiting review**. Exact submission replay returned the same job and no extra batch | Two actual text packets; neither draft approved or queued for publishing |
 
 Container evidence: [deployment and restart summary](evidence/2026-10-19/compose.json).
 Native Windows evidence: [installation, startup and local generation](evidence/2026-10-20/windows-native.json).
+Native GPU image evidence: [real ComfyUI image delivery and trace attachment](evidence/2026-10-20/windows-comfyui-image.json).
 Real provider evidence below contains only synthetic smoke-test content, no credentials.
 
 ## Real generation and external integration status
@@ -36,9 +38,9 @@ Real provider evidence below contains only synthetic smoke-test content, no cred
 | Claude subscription CLI | Account reported organization-disabled subscription access; another probe timed out | Successful generation after account policy permits access |
 | Anthropic API | Protocol fixtures pass; no API credential configured for live checks | Real text/JSON generation |
 | Google image / Veo video | Protocol, binary handling, durable operation ID/poll/resume fixtures pass | Configured Google credential and real image/video outputs |
-| ComfyUI | Approved templates, shared prompts, file handling, traversal rejection and operation recovery tested | Actual installed models/workflows and image/video generation on GPU |
+| ComfyUI | **Image passed:** actual FLUX.3 Image Klein Q4_K_M on Windows/GTX 1060, approved graph, result download/checksum/ACK and matching LangSmith attachments. A factory-only restart resumed the same attempt/fence/prompt with one provider enqueue | Other models, reference-image workflows, real audio/video, model-server restart/history loss and OS/network recovery |
 | OpenAI-compatible server | **Text and JSON passed** on a physical Windows laptop against existing llama.cpp Vulkan, `gemma-4-E2B-it-Q4_K_M.gguf`; JSON also passed against Ollama's compatibility endpoint, `qwen2.5-coder:0.5b` | Other compatible inference servers and models |
-| LangSmith | **Passed:** previous two-factory comparison/attachment verification; physical-Windows application batch has two successful input/output traces, two earlier closed failure traces, and a completed-batch native experiment with two runs | Actual API records verified; comparison UI/media rendering not visually inspected; attachments were synthetic PNG fixtures |
+| LangSmith | **Passed:** previous comparison/attachment verification; physical-Windows text batch has two successful traces and a native two-run experiment. Two real GPU images have accepted closed traces, matching decoded attachments and native experiments sharing a dataset and stable case | API records and attachment bytes verified; comparison UI/media rendering uninspected. The deliberately killed factory left one original outputless trace unclosed; its recovered result has a separate closed trace. Optional attachment API MIME fields were null; object headers and PNG decoding passed |
 | Runpod | REST lifecycle, ownership, ambiguous create recovery, startup quarantine, idle drain/stop and leader coordination tested | Configured account/template; real pod start, work, drain and stop |
 
 Codex: [text probe](evidence/2026-10-19/codex-text.json),
@@ -86,13 +88,64 @@ which created no drafts and closed their LangSmith traces with errors. A new
 immutable batch using 2,048 tokens per packet succeeded; the previous packets and
 model runtime were unchanged. The two successful calls used 805 and 724 completion
 tokens and took approximately 29.6 and 26.1 seconds. These are functional job
-observations, not a new performance benchmark. A second personal computer has not
-been deployed.
+observations, not a new performance benchmark. A second physical Windows computer
+has now completed the separate ComfyUI image check below.
 
 This verifies the existing llama.cpp runtime; ComfyUI, Ollama and subscription CLI
 authentication have not been verified on that laptop. Windows CLI backends require
 native executables; shell batch shims are rejected. Select the native executable
 path in backend configuration when necessary.
+
+### Windows ComfyUI image verification
+
+A second Windows 10 factory generated two real images with
+`Abiray/flux-3-image-klein-sd-GGUF:Q4_K_M` on a GTX 1060 with 6,144 MiB VRAM
+(SM 6.1) and approximately 28 GiB RAM. The isolated runtime was ComfyUI 0.42.1,
+Python 3.12.10, Torch 2.14.0+cu126 and pinned ComfyUI-GGUF nodes. All three model
+files matched their pinned lengths and SHA-256 hashes. The operator used authorized
+upstream access for the gated text encoder and VAE.
+
+The approved graph used a CPU INT8 text encoder, CPU VAE, 512×512 canvas, four
+Euler/simple steps, CFG 1 and seed 42. Visual inspection confirmed the requested
+red ceramic fox scene. One packet succeeded on its first attempt; the downloaded
+PNG was 303,997 bytes and matched SHA-256
+`371db5a2447c2b5f09d1dbb06bf503cd7f60e92dc7f961b43a51cd5675b79d96`.
+A private generic HTTP verification receiver downloaded, decoded and durably saved
+the result; Warehouse accepted its acknowledgement. This image probe did not use
+the Collector SDK or import an image draft into Media Presence. The linked
+LangSmith attachment was independently downloaded, fully decoded at 512×512 and
+matched the same bytes; its native batch experiment exported successfully. After
+ACK, the receiver reused its saved result envelope, downloaded the retained artifact
+again and repeated ACK harmlessly. The attempt count remained one; this checked
+delivery replay, without requesting another generation.
+
+ComfyUI reported **127.90 seconds** for this cold run, including model loading,
+CPU text encoding and decoding; the factory trace lasted approximately 130 seconds.
+These are functional observations, not warm throughput or a hardware benchmark.
+The recorded 9.90 GiB process lifetime peak working set and a loading-time GPU/RAM
+snapshot are not synchronized peak measurements; exact GPU peak was not measured.
+
+Both current-user login tasks were installed with limited privileges and were
+running during the check. Factory startup includes a local ComfyUI readiness wait.
+During a second, sixteen-step generation, the factory process was stopped and
+restarted in 3.217 seconds. The separate ComfyUI process continued running. The
+factory resumed the same attempt, fence and provider prompt; only one provider
+enqueue occurred. The accepted 512×512 PNG was downloaded, decoded, saved and ACKed,
+with 308,557 bytes and SHA-256
+`0ee664e78dca21d40e4ea94d91e40b0947995d9ca8feeb56af8b9f3e9c16272a`.
+Its independently decoded LangSmith attachment matched. ComfyUI reported 129.42
+seconds for that generation. The accepted trace lasted 113.508153 seconds starting
+after restart, so its duration does not represent the whole job. The interrupted
+original trace remains unclosed and has no outputs; trace count is not generation
+count. Actual API checks confirmed two native experiments on the same dataset and
+stable case, each with one successful run linked to the accepted result trace.
+This is recovery and experiment provenance evidence, not a cold/warm or model
+quality benchmark. The LangSmith comparison and media UI were not inspected.
+
+No fresh login, reboot, sleep/resume, network interruption or ComfyUI server restart
+has yet been verified for this deployment. Other image models, reference inputs,
+audio and video are still pending. See the [reusable Windows ComfyUI
+guide](windows-comfyui.md) for pinned artifacts, example graph and scope limits.
 
 ## Reproduce
 
@@ -123,8 +176,8 @@ Configure provider-side limits. Packets themselves have no cost policy or accoun
 The LangSmith verifier requires both isolated test PostgreSQL URLs, an already
 installed Ollama model and LangSmith credentials; it creates synthetic projects and
 records their private inspection URLs in the ignored local evidence file.
-Real image/audio/video generation and cloud lifecycle checks remain release
-verification work until actual outputs and lifecycle evidence exist. The Windows
-text factory and Media Presence's two-draft delivery have been verified end to end.
-Physical recovery checks and visual inspection of the LangSmith comparison UI
-remain pending.
+Real audio/video generation, other model combinations and cloud lifecycle checks
+remain release verification work. The Windows text factory, two-draft application
+delivery and two Windows GPU image packets have been verified end to end, including
+factory-only recovery during image generation. OS/model-server/network recovery
+and visual inspection of the LangSmith comparison UI remain pending.

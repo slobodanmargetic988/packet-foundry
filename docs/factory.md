@@ -94,6 +94,12 @@ and place the backend object under a named factory backend. Advertise template
 `sd-image-v1` on its execution profile. The example remains GPU-unverified; it neither
 installs weights nor assumes a checkpoint is present.
 
+For a configuration that has produced an actual GPU image, see the
+[Windows ComfyUI guide](windows-comfyui.md) and
+[FLUX.3 Image Klein backend example](../examples/comfyui-flux3-klein.backend.json).
+Its fixed 512×512 graph was verified on one Windows GTX 1060; that result does not
+establish other models, resolutions or video/audio support on the same hardware.
+
 Mapping source `prompt` joins the resolved shared/packet system rules with the
 resolved instructions and inline materials, omitting blank blocks. Use it for the
 usual positive-prompt node so shared generation rules are included. Existing

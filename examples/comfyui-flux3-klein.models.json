@@ -1,0 +1,32 @@
+{
+  "description": "Pinned model artifacts for the verified Windows FLUX.3 Image Klein Q4_K_M example. Weights are not included. Obtain authorized upstream access before downloading gated files.",
+  "models": [
+    {
+      "repository": "Abiray/flux-3-image-klein-sd-GGUF",
+      "revision": "51f5299d7bdcaa2691f45d52bf0fc58754459e24",
+      "filename": "flux3_image_klein_sd_Q4_K_M.gguf",
+      "destination_relative_to_comfyui": "models/diffusion_models/flux3_image_klein_sd_Q4_K_M.gguf",
+      "size_bytes": 3269858080,
+      "sha256": "c0dc60488f1d73517e60252d0d1ce24a8a9a19275ea669c0b96408a10fc871ac",
+      "url": "https://huggingface.co/Abiray/flux-3-image-klein-sd-GGUF/resolve/51f5299d7bdcaa2691f45d52bf0fc58754459e24/flux3_image_klein_sd_Q4_K_M.gguf"
+    },
+    {
+      "repository": "black-forest-labs/flux-3-image-klein-comfy",
+      "revision": "feef60b0aaf63a4773ace96636ebbcf43b881312",
+      "filename": "text_encoders/qwen3vl_4b_int8_convrot.safetensors",
+      "destination_relative_to_comfyui": "models/text_encoders/qwen3vl_4b_int8_convrot.safetensors",
+      "size_bytes": 4858559240,
+      "sha256": "32de113cbf8282b02cbff0794b637b9d6676da09314a1db5a30bcea9bf4ee01c",
+      "url": "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/feef60b0aaf63a4773ace96636ebbcf43b881312/text_encoders/qwen3vl_4b_int8_convrot.safetensors"
+    },
+    {
+      "repository": "black-forest-labs/flux-3-image-klein-comfy",
+      "revision": "feef60b0aaf63a4773ace96636ebbcf43b881312",
+      "filename": "vae/flux2-vae.safetensors",
+      "destination_relative_to_comfyui": "models/vae/flux2-vae.safetensors",
+      "size_bytes": 336211292,
+      "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3",
+      "url": "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/feef60b0aaf63a4773ace96636ebbcf43b881312/vae/flux2-vae.safetensors"
+    }
+  ]
+}
