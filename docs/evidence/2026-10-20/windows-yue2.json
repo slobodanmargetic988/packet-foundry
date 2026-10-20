@@ -1,0 +1,371 @@
+{
+  "checked_date": "2026-10-20",
+  "status": "passed_technical_pair_with_human_usability_feedback",
+  "scope": "Two consecutive real native Windows YuE2 GPU audio outputs passed full decode, durable generic HTTP receiver save/ACK, exact closed LangSmith attachments and actual native experiment API provenance. The user listened to each actual FLAC preview and found it usable music. Lyric accuracy, comparative quality and LangSmith UI playback remain unassessed.",
+  "privacy": {
+    "deployment_identifiers_removed": true,
+    "private_endpoints_paths_and_tracing_workspace_identifiers_removed": true,
+    "synthetic_test_content_only": true
+  },
+  "release": {
+    "factory": "0.1.2",
+    "contracts": "0.1.2",
+    "commit": "970af7b18c38c44d13d3f19e0ade65419dece849"
+  },
+  "hardware": {
+    "os": "Windows 10",
+    "gpu": "NVIDIA GeForce GTX 1060",
+    "vram_mib": 6144,
+    "compute_capability": "6.1",
+    "ram_kib": 29311776,
+    "driver": "582.28",
+    "physical_device": true,
+    "wsl": false,
+    "native_bf16": false
+  },
+  "runtime": {
+    "comfyui": "0.42.1",
+    "comfyui_commit": "63be2f9b82ad0dac88a7ceaa28a9cf3154125a18",
+    "official_portable_asset": "ComfyUI_windows_portable_nvidia_cu126.7z",
+    "official_portable_bytes": 1910153206,
+    "official_portable_sha256": "0506abc6563ea5928a052fe0bc0b32c2a063098558bd593fe39345a27f1e47fc",
+    "python": "3.12.10",
+    "torch": "2.14.0+cu126",
+    "cuda": "12.6",
+    "comfy_kitchen": "0.2.39",
+    "comfyui_gguf_commit": "6ea2651e7df66d7585f6ffee804b20e92fb38b8a",
+    "gguf_package": "0.19.0",
+    "sentencepiece": "0.2.2",
+    "protobuf": "7.36.2",
+    "factory_python": "3.13.16",
+    "langsmith_sdk": "0.14.11"
+  },
+  "provider": {
+    "backend": "comfyui",
+    "model": "Comfy-Org/YuE2:int8-convrot",
+    "execution_profile": "yue2-int8-gpu-15s",
+    "public_example_template": "yue2-gpu-15s-v1",
+    "approved_operator_graph": true,
+    "actual_deployed_graph_extracted_and_example_matched_except_mapped_style_placeholder": true,
+    "input_kinds": [
+      "text",
+      "json"
+    ],
+    "output_kinds": [
+      "audio"
+    ],
+    "shared_gpu_capacity": 1,
+    "supports_live": false,
+    "accept_experiments": false,
+    "real_inference": true,
+    "paid_inference": false,
+    "model_files_verified": [
+      {
+        "repository": "Comfy-Org/YuE2",
+        "revision": "2f76ca75e6ee094169de899cc7fc99d6887e2196",
+        "filename": "checkpoints/yue2_3b_int8_convrot.safetensors",
+        "destination_relative_to_comfyui": "models/checkpoints/yue2_3b_int8_convrot.safetensors",
+        "size_bytes": 3960938800,
+        "sha256": "96fe199377309001ed8cd26a944baeee8cc31a20ba7c36d1d3c0a7e1f4149db6",
+        "url": "https://huggingface.co/Comfy-Org/YuE2/resolve/2f76ca75e6ee094169de899cc7fc99d6887e2196/checkpoints/yue2_3b_int8_convrot.safetensors",
+        "declared_license": "CC-BY-NC-4.0",
+        "license_declaration_url": "https://huggingface.co/Comfy-Org/YuE2/blob/2f76ca75e6ee094169de899cc7fc99d6887e2196/README.md",
+        "provenance": "Official Comfy-Org repackaged INT8 ConvRot YuE2 3B checkpoint, containing the autoregressive encoder, non-autoregressive diffusion model and audio VAE. No separate cover/transcription checkpoint is required by this text-to-music graph."
+      }
+    ],
+    "ar_placement": "Stock SelectCLIPDevice(gpu:0), CUDA AR full load and computation observed; CPU offload preserved",
+    "diffusion_compute": "float32 on GPU under existing low-VRAM manager",
+    "vae_compute": "float32 on CPU"
+  },
+  "settings": {
+    "maximum_duration_seconds": 15.0,
+    "output_format": "flac",
+    "ar_cfg_scale": 1.01,
+    "ar_cfg_branches": 2,
+    "maximum_semantic_tokens": 375,
+    "saved_mode_widget": "full",
+    "effective_mode": "off because ABC is empty; no ABC planning stage",
+    "nar_steps": 32,
+    "sampler": "dpm_2",
+    "scheduler": "sgm_uniform",
+    "sampler_cfg": 1.0,
+    "original_synthetic_lyrics_fixed": true,
+    "output_mime_type_constraint": null,
+    "output_mime_alias_normalization_by_core": false
+  },
+  "consecutive_pair": {
+    "status": "passed_technical_pair_with_human_usability_feedback",
+    "first": {
+      "label": "morning style, seed 42",
+      "seed": 42,
+      "technical_status": "passed",
+      "accepted_attempts": 1,
+      "warehouse_result_downloaded": true,
+      "durable_receiver_save": true,
+      "warehouse_acknowledged": true,
+      "artifact": {
+        "mime_type": "audio/x-flac",
+        "size_bytes": 974846,
+        "sha256": "70e752e301520f8e848520b747a884c0bb48ab74ed1f9a8251ac0d3ece295a8a",
+        "audio_metrics": {
+          "status": "passed",
+          "sha256": "70e752e301520f8e848520b747a884c0bb48ab74ed1f9a8251ac0d3ece295a8a",
+          "size_bytes": 974846,
+          "codec": "flac",
+          "sample_rate_hz": 48000,
+          "channels": 2,
+          "container_duration_seconds": 15.0,
+          "decoded_frame_count": 720000,
+          "decoded_duration_seconds": 15.0,
+          "duration_maximum_seconds": 15.0,
+          "duration_tolerance_seconds": 0.1,
+          "decoded_duration_cap_verified": true,
+          "decoded_and_container_duration_agree": true,
+          "full_decode_passed": true,
+          "decoded_pcm_format": "float32 little endian at original sample rate/channel count",
+          "sample_count": 1440000,
+          "all_pcm_finite": true,
+          "nonzero_pcm_energy": true,
+          "mean_square": 0.01555823614279442,
+          "rms": 0.12473265868566427,
+          "peak_absolute_amplitude": 0.709625244140625,
+          "near_full_scale_threshold": 0.999,
+          "near_full_scale_sample_count": 0,
+          "near_full_scale_sample_fraction": 0.0,
+          "at_or_above_full_scale_sample_count": 0,
+          "at_or_above_full_scale_sample_fraction": 0.0,
+          "per_channel": [
+            {
+              "channel_index": 0,
+              "rms": 0.125496182836101,
+              "peak_absolute_amplitude": 0.709625244140625,
+              "nonzero_energy": true
+            },
+            {
+              "channel_index": 1,
+              "rms": 0.12396443191156384,
+              "peak_absolute_amplitude": 0.669281005859375,
+              "nonzero_energy": true
+            }
+          ],
+          "limits": [
+            "Technical validity and signal metrics do not establish music, intelligibility, lyric accuracy or listening quality.",
+            "Near-full-scale sample counts are a clipping indicator, not proof of audible distortion."
+          ]
+        }
+      },
+      "langsmith": {
+        "closed_successful_trace": true,
+        "trace_duration_seconds": 700.257132,
+        "exact_attachment_bytes_and_independent_full_decode_passed": true,
+        "media_preview_ui_inspected": false,
+        "mime_observations": {
+          "warehouse_declared": "audio/x-flac",
+          "object_response_content_type": "audio/x-flac",
+          "independently_detected": "audio/flac",
+          "optional_api_declared": null
+        }
+      },
+      "native_execution": {
+        "server_history_seconds": 696.921,
+        "cached_nodes": [],
+        "ar_terminal_progress": 375,
+        "ar_maximum_progress": 375,
+        "captured_ar_progress_event_count": 188,
+        "ar_each_individual_token_event_captured": false,
+        "nar_sampler_steps_observed": 32,
+        "nar_sampler_steps_expected": 32,
+        "observer_node_intervals_seconds": {
+          "ar_plus_acoustic_conditioning": 585.505,
+          "nar_sampler_including_model_preparation": 56.461,
+          "cpu_audio_vae_decode": 22.956
+        },
+        "interval_limits": "Observer receive boundaries include model preparation, casting and computation inside the node; AR interval also includes acoustic conditioning and is not pure token decoding.",
+        "resources": {
+          "sample_count": 342,
+          "inflight_sample_count": 341,
+          "minimum_ram_available_bytes": 8604909568,
+          "minimum_commit_available_bytes": 4240633856,
+          "minimum_system_drive_free_bytes": 11341987840,
+          "maximum_sampled_device_gpu_used_mib": 5885
+        },
+        "resource_sampling_interval_seconds": 2,
+        "resource_scope": "Pre-ACK/in-flight samples include staging, provider polling and completion transport, not only GPU execution. GPU values cover the whole device including existing workloads; sampled extrema are not continuous peaks."
+      },
+      "human_listening": {
+        "assessed": true,
+        "assessor": "human operator/user",
+        "method": "Direct user feedback after listening to this actual FLAC preview",
+        "usable_music_feedback": true,
+        "lyric_accuracy_or_intelligibility_verified": false,
+        "comparative_quality_or_genre_ranking_verified": false
+      }
+    },
+    "second": {
+      "label": "evening style, seed 43",
+      "seed": 43,
+      "technical_status": "passed",
+      "accepted_attempts": 1,
+      "warehouse_result_downloaded": true,
+      "durable_receiver_save": true,
+      "warehouse_acknowledged": true,
+      "artifact": {
+        "mime_type": "audio/x-flac",
+        "size_bytes": 648924,
+        "sha256": "51bcb6456e45328647c3cdb56067eb25f637f7d9cbec13c50ded81e5207a85b1",
+        "audio_metrics": {
+          "status": "passed",
+          "sha256": "51bcb6456e45328647c3cdb56067eb25f637f7d9cbec13c50ded81e5207a85b1",
+          "size_bytes": 648924,
+          "codec": "flac",
+          "sample_rate_hz": 48000,
+          "channels": 2,
+          "container_duration_seconds": 15.0,
+          "decoded_frame_count": 720000,
+          "decoded_duration_seconds": 15.0,
+          "duration_maximum_seconds": 15.0,
+          "duration_tolerance_seconds": 0.1,
+          "decoded_duration_cap_verified": true,
+          "decoded_and_container_duration_agree": true,
+          "full_decode_passed": true,
+          "decoded_pcm_format": "float32 little endian at original sample rate/channel count",
+          "sample_count": 1440000,
+          "all_pcm_finite": true,
+          "nonzero_pcm_energy": true,
+          "mean_square": 0.004603849052986415,
+          "rms": 0.06785166949299343,
+          "peak_absolute_amplitude": 0.5576171875,
+          "near_full_scale_threshold": 0.999,
+          "near_full_scale_sample_count": 0,
+          "near_full_scale_sample_fraction": 0.0,
+          "at_or_above_full_scale_sample_count": 0,
+          "at_or_above_full_scale_sample_fraction": 0.0,
+          "per_channel": [
+            {
+              "channel_index": 0,
+              "rms": 0.05246762640254212,
+              "peak_absolute_amplitude": 0.35211181640625,
+              "nonzero_energy": true
+            },
+            {
+              "channel_index": 1,
+              "rms": 0.08034205801232686,
+              "peak_absolute_amplitude": 0.5576171875,
+              "nonzero_energy": true
+            }
+          ],
+          "limits": [
+            "Technical validity and signal metrics do not establish music, intelligibility, lyric accuracy or listening quality.",
+            "Near-full-scale sample counts are a clipping indicator, not proof of audible distortion."
+          ]
+        }
+      },
+      "langsmith": {
+        "closed_successful_trace": true,
+        "trace_duration_seconds": 634.166142,
+        "exact_attachment_bytes_and_independent_full_decode_passed": true,
+        "media_preview_ui_inspected": false,
+        "mime_observations": {
+          "warehouse_declared": "audio/x-flac",
+          "object_response_content_type": "audio/x-flac",
+          "independently_detected": "audio/flac",
+          "optional_api_declared": null
+        }
+      },
+      "native_execution": {
+        "server_history_seconds": 630.994,
+        "cached_nodes": [
+          "1",
+          "8"
+        ],
+        "ar_terminal_progress": 375,
+        "ar_maximum_progress": 375,
+        "captured_ar_progress_event_count": 188,
+        "ar_each_individual_token_event_captured": false,
+        "nar_sampler_steps_observed": 32,
+        "nar_sampler_steps_expected": 32,
+        "observer_node_intervals_seconds": {
+          "ar_plus_acoustic_conditioning": 557.624,
+          "nar_sampler_including_model_preparation": 43.988,
+          "cpu_audio_vae_decode": 21.263
+        },
+        "interval_limits": "Observer receive boundaries include model preparation, casting and computation inside the node; AR interval also includes acoustic conditioning and is not pure token decoding.",
+        "resources": {
+          "sample_count": 310,
+          "inflight_sample_count": 309,
+          "minimum_ram_available_bytes": 8661499904,
+          "minimum_commit_available_bytes": 4338237440,
+          "minimum_system_drive_free_bytes": 9653174272,
+          "maximum_sampled_device_gpu_used_mib": 5883
+        },
+        "resource_sampling_interval_seconds": 2,
+        "resource_scope": "Pre-ACK/in-flight samples include staging, provider polling and completion transport, not only GPU execution. GPU values cover the whole device including existing workloads; sampled extrema are not continuous peaks."
+      },
+      "human_listening": {
+        "assessed": true,
+        "assessor": "human operator/user",
+        "method": "Direct user feedback after listening to this actual FLAC preview",
+        "usable_music_feedback": true,
+        "lyric_accuracy_or_intelligibility_verified": false,
+        "comparative_quality_or_genre_ranking_verified": false
+      }
+    },
+    "same_process_and_remaining_settings": true,
+    "only_mapped_style_and_seed_changed": true,
+    "intervening_model_unload_or_cache_clear": false,
+    "os_file_cache_cleared": false,
+    "cold_disk_or_complete_gpu_residency_proven": false,
+    "background_model_downloads_present": true,
+    "exact_changed_graph_inputs": [
+      "node 2 style: morning to evening",
+      "node 2 AR seed:42 to43",
+      "node 5 diffusion seed:42 to43"
+    ]
+  },
+  "subjective_review": {
+    "first_run_user_usable_music_feedback": true,
+    "second_run_user_usable_music_feedback": true,
+    "assessor": "human operator/user after actual local FLAC previews",
+    "reviewing_tool_audio_inspection_available": false,
+    "lyric_accuracy_or_intelligibility": "unassessed",
+    "comparative_quality_or_genre_ranking": "unassessed",
+    "langsmith_ui_playback": "uninspected",
+    "technical_audio_validity_alone_does_not_establish_perceptual_quality": true
+  },
+  "runtime_observations": {
+    "retained_reference_memory_leak_warnings_emitted": true,
+    "explicit_garbage_collection_observed": true,
+    "actual_leak_or_long_running_residency_safety_established": false,
+    "description": "The runtime emitted retained-reference / memory-leak warnings at model unload transitions. Preserve this limitation; successful output does not prove absence of retained references or sustained memory growth.",
+    "execution_error_in_completed_pair": false
+  },
+  "earlier_cpu_trial": {
+    "status": "canceled_incomplete",
+    "semantic_progress_before_cancel": 47,
+    "maximum_semantic_tokens": 375,
+    "full_audio_generated_or_delivered": false,
+    "included_in_gpu_pair": false,
+    "configuration_changed_by_new_graph_only": "Stock per-model GPU selector; global image flags/lyrics/cap unchanged"
+  },
+  "limits": [
+    "Human feedback supports usable music for these two files, not lyric accuracy/intelligibility, genre faithfulness, comparative quality or broader model quality.",
+    "Generic HTTP receiver exercised; Collector SDK audio import and an application-specific audio UI were not tested.",
+    "Factory trace and Comfy server totals use different boundaries; node receipt intervals are not pure loading or compute measurements.",
+    "Resource values are sampled and device-wide where stated, not continuous per-process peaks or hardware recommendations.",
+    "Runtime retained-reference warnings were observed; leak-free long-running memory behavior is not established by two completed requests.",
+    "No formal throughput benchmark, new OS login/reboot/sleep, Comfy server restart, or audio-specific interruption recovery was tested.",
+    "FLAC MIME aliases differed between declarations/detection; exact bytes and full decoding passed. Optional attachment API MIME was null; LangSmith UI playback was not inspected.",
+    "Model terms remain CC-BY-NC-4.0 independently of Packet Foundry code.",
+    "Verification packets intentionally omitted exact output.mime_type. Portable FLAC callers should omit that constraint or match the actual factory declaration; core matching does not normalize audio/flac and audio/x-flac."
+  ],
+  "native_experiments": {
+    "actual_api_provenance_verified": true,
+    "successful_experiment_count": 2,
+    "successful_runs_per_experiment": 1,
+    "same_dataset": true,
+    "same_case": false,
+    "case_difference_intentional_due_to_style_change": true,
+    "expected_model_template_profile_seed_trace_and_artifact_verified": true,
+    "comparison_or_media_ui_inspected": false
+  }
+}

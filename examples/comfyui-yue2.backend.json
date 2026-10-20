@@ -1,0 +1,142 @@
+{
+  "kind": "comfyui",
+  "auth_mode": "none",
+  "base_url": "http://127.0.0.1:8188",
+  "timeout_seconds": 21600,
+  "poll_seconds": 3,
+  "defaults": {
+    "seed": 42
+  },
+  "templates": {
+    "yue2-gpu-15s-v1": {
+      "workflow": {
+        "1": {
+          "class_type": "CheckpointLoaderSimple",
+          "inputs": {
+            "ckpt_name": "yue2_3b_int8_convrot.safetensors"
+          }
+        },
+        "2": {
+          "class_type": "YuE2GenerateMusic",
+          "inputs": {
+            "clip": [
+              "8",
+              0
+            ],
+            "style": "",
+            "lyrics": "[Verse]\nMorning sunlight fills the room\nLittle flowers start to bloom\n[Chorus]\nTake a breath and start again\nLet the daylight wander in",
+            "abc": "",
+            "seed": 42,
+            "mode": "full",
+            "max_duration": 15.0,
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": 100,
+            "repetition_penalty": 1.2,
+            "cfg_scale": 1.01
+          }
+        },
+        "3": {
+          "class_type": "ConditioningZeroOut",
+          "inputs": {
+            "conditioning": [
+              "2",
+              0
+            ]
+          }
+        },
+        "4": {
+          "class_type": "EmptyYuE2LatentAudio",
+          "inputs": {
+            "seconds": [
+              "2",
+              1
+            ],
+            "batch_size": 1
+          }
+        },
+        "5": {
+          "class_type": "KSampler",
+          "inputs": {
+            "seed": 42,
+            "steps": 32,
+            "cfg": 1.0,
+            "sampler_name": "dpm_2",
+            "scheduler": "sgm_uniform",
+            "denoise": 1.0,
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "2",
+              0
+            ],
+            "negative": [
+              "3",
+              0
+            ],
+            "latent_image": [
+              "4",
+              0
+            ]
+          }
+        },
+        "6": {
+          "class_type": "VAEDecodeAudio",
+          "inputs": {
+            "samples": [
+              "5",
+              0
+            ],
+            "vae": [
+              "1",
+              2
+            ]
+          }
+        },
+        "7": {
+          "class_type": "SaveAudioAdvanced",
+          "inputs": {
+            "filename_prefix": "PacketFoundry-YuE2",
+            "format": "flac",
+            "audio": [
+              "6",
+              0
+            ]
+          }
+        },
+        "8": {
+          "class_type": "SelectCLIPDevice",
+          "inputs": {
+            "clip": [
+              "1",
+              1
+            ],
+            "device": "gpu:0"
+          }
+        }
+      },
+      "mappings": [
+        {
+          "node": "2",
+          "input": "style",
+          "source": "prompt"
+        },
+        {
+          "node": "2",
+          "input": "seed",
+          "source": "parameter:seed"
+        },
+        {
+          "node": "5",
+          "input": "seed",
+          "source": "parameter:seed"
+        }
+      ],
+      "output_nodes": [
+        "7"
+      ]
+    }
+  }
+}

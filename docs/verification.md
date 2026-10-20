@@ -1,8 +1,8 @@
 # Verification matrix
 
 Status as of **20 October 2026**: working implementation, with two physical Windows
-factories deployed from public release **v0.1.2** for real text/JSON and image work. The four-service
-stack is exercised end to end, including real containers and PostgreSQL. Complete
+factories deployed from public release **v0.1.2** for real text/JSON, image and
+YuE2 audio work. The four-service stack is exercised end to end, including real containers and PostgreSQL. Complete
 live verification of every media/provider integration is still pending. Do not treat
 synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evidence.
 
@@ -20,7 +20,8 @@ synthetic HTTP responses or mocked cloud lifecycle tests as real model/GPU evide
 | Media trace transport | Actual SDK uploaded two synthetic PNG attachments; stored bytes were downloaded and matched | Proves transport, not model media generation or UI rendering |
 | Packaging | All five wheels build; independent factory installation from wheel bundle succeeds | Native installation tested in an isolated local tool environment |
 | Physical Windows factory | Public v0.1.2 checksums and installed versions verified; real llama.cpp text/JSON output, HTTPS registry registration/heartbeat and running current-user startup task | Existing local model runtime; user already logged in; physical recovery checks pending |
-| Physical Windows image factory | Actual ComfyUI FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 each passed a consecutive red/blue prompt and seed 42/43 pair. Separate FLUX.3 checks include the original image and a factory-only restart with no extra enqueue. All accepted results were visually checked, downloaded/ACKed and matched their LangSmith attachments | GTX 1060 6 GB functional checks; additional models, video/audio, OS and model-server recovery remain unverified |
+| Physical Windows image factory | Actual ComfyUI FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 each passed a consecutive red/blue prompt and seed 42/43 pair. Separate FLUX.3 checks include the original image and a factory-only restart with no extra enqueue. All accepted results were visually checked, downloaded/ACKed and matched their LangSmith attachments | GTX 1060 6 GB functional checks; YuE2 audio is verified separately below. Additional models, video, OS and model-server recovery remain unverified |
+| Physical Windows audio factory | YuE2 produced two consecutive real 15-second stereo FLACs, fully decoded/saved/ACKed with matching LangSmith attachments and native experiments. The user listened to both actual previews and confirmed usable music | Human usability feedback differs from automated signal checks; lyric accuracy, genre faithfulness, comparative quality and audio interruption recovery remain unassessed |
 | Real application delivery | Browser requested two LinkedIn drafts; physical Windows factory generated both, Collector imported them, and production Feed showed both as **Awaiting review**. Exact submission replay returned the same job and no extra batch | Two actual text packets; neither draft approved or queued for publishing |
 
 Container evidence: [deployment and restart summary](evidence/2026-10-19/compose.json).
@@ -28,6 +29,7 @@ Native Windows evidence: [installation, startup and local generation](evidence/2
 Native GPU image evidence: [real ComfyUI image delivery and trace attachment](evidence/2026-10-20/windows-comfyui-image.json).
 Qwen image evidence: [consecutive fresh-prompt generation and model-cache observations](evidence/2026-10-20/windows-qwen-image21.json).
 FLUX.1-dev evidence: [two real Q4_0 image deliveries and model-cache observations](evidence/2026-10-20/windows-flux1-dev.json).
+YuE2 audio evidence: [two real GPU audio deliveries, user usability feedback and tracing](evidence/2026-10-20/windows-yue2.json).
 Real provider evidence below contains only synthetic smoke-test content, no credentials.
 
 ## Real generation and external integration status
@@ -40,9 +42,9 @@ Real provider evidence below contains only synthetic smoke-test content, no cred
 | Claude subscription CLI | Account reported organization-disabled subscription access; another probe timed out | Successful generation after account policy permits access |
 | Anthropic API | Protocol fixtures pass; no API credential configured for live checks | Real text/JSON generation |
 | Google image / Veo video | Protocol, binary handling, durable operation ID/poll/resume fixtures pass | Configured Google credential and real image/video outputs |
-| ComfyUI | **Image passed:** actual FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 on Windows/GTX 1060, approved graphs, result download/checksum/ACK and matching LangSmith attachments. All three passed consecutive fresh-prompt generations. A separate FLUX.3 factory-only restart resumed the same attempt/fence/prompt with one provider enqueue | Additional models, reference-image workflows, real audio/video, model-server restart/history loss and OS/network recovery |
+| ComfyUI | **Image passed:** actual FLUX.3 Image Klein Q4_K_M, Qwen Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 on Windows/GTX 1060, approved graphs, result download/checksum/ACK and matching LangSmith attachments. All three passed consecutive fresh-prompt generations. A separate FLUX.3 factory-only restart resumed the same attempt/fence/prompt with one provider enqueue. **YuE2 audio passed:** two real 15-second FLACs, full decode/save/ACK, exact attachments/native experiments, positive user usability feedback | Other models, reference inputs, full video, lyric accuracy/comparative audio quality, audio recovery, model-server restart/history loss and OS/network recovery |
 | OpenAI-compatible server | **Text and JSON passed** on a physical Windows laptop against existing llama.cpp Vulkan, `gemma-4-E2B-it-Q4_K_M.gguf`; JSON also passed against Ollama's compatibility endpoint, `qwen2.5-coder:0.5b` | Other compatible inference servers and models |
-| LangSmith | **Passed:** previous comparison/attachment verification; physical-Windows text batch has two successful traces and a native two-run experiment. Accepted FLUX and Qwen image results have closed traces and matching decoded attachments. The initial FLUX image/recovery experiments share a dataset/case; the later fresh-prompt FLUX and Qwen pairs intentionally use different red/blue cases on the same dataset | API records and attachment bytes verified; comparison UI/media rendering uninspected. The deliberately killed factory left one original outputless trace unclosed; its recovered result has a separate closed trace. Optional attachment API MIME fields were null; object headers and PNG decoding passed |
+| LangSmith | **Passed:** previous comparison/attachment verification; physical-Windows text batch has two successful traces and a native two-run experiment. Accepted FLUX/Qwen images and YuE2 audio results have closed traces and matching decoded attachments. The initial FLUX image/recovery experiments share a dataset/case; the later fresh-prompt image pairs use different red/blue cases on their dataset, and YuE2 uses different morning/evening cases on its audio dataset | API records and attachment bytes verified; comparison UI/media rendering uninspected. The deliberately killed factory left one original outputless trace unclosed; its recovered result has a separate closed trace. Optional attachment API MIME fields were null; object headers and independent PNG/FLAC decoding passed |
 | Runpod | REST lifecycle, ownership, ambiguous create recovery, startup quarantine, idle drain/stop and leader coordination tested | Configured account/template; real pod start, work, drain and stop |
 
 Codex: [text probe](evidence/2026-10-19/codex-text.json),
@@ -171,7 +173,7 @@ check remain separate from this matched-settings pair in the
 
 No fresh login, reboot, sleep/resume, robust network-interruption recovery or ComfyUI
 server restart has yet been verified for this deployment. Additional image models,
-reference inputs, audio and video are still pending. See the [reusable Windows ComfyUI
+reference inputs and video are still pending; YuE2 audio is verified separately below. See the [reusable Windows ComfyUI
 guide](windows-comfyui.md) for pinned artifacts, example graph and scope limits.
 
 ### Qwen Image 2.1 consecutive generation verification
@@ -217,7 +219,8 @@ The [reusable example](../examples/comfyui-qwen-image21.backend.json),
 reviewed configuration and sources. Qwen's model weights use the separately linked
 Qwen Research terms for non-commercial research/evaluation; the Foundry code
 license does not grant commercial model rights. Image editing, other Qwen
-quantizations and audio/video remain unverified.
+quantizations and audio/video from other model configurations remain unverified;
+YuE2 audio is covered separately below.
 
 ### FLUX.1-dev consecutive generation verification
 
@@ -259,8 +262,59 @@ The diffusion checkpoint retains the linked FLUX.1-dev Non-Commercial model term
 these are evaluation trials, independently of Foundry's Apache-2.0 code license.
 The receiver was a generic HTTP harness, so Collector SDK and Media Presence image
 import were not exercised. Other quantizations, reference-image/editing workflows,
-audio/video and OS/model-server/network recovery remain unverified. See the
+full video and OS/model-server/network recovery remain unverified; YuE2 audio
+is covered separately below. See the
 [sanitized complete evidence](evidence/2026-10-20/windows-flux1-dev.json).
+
+### YuE2 GPU audio verification
+
+`Comfy-Org/YuE2:int8-convrot` produced two consecutive 15.0-second, 48 kHz stereo
+FLACs through the same Windows factory and generic HTTP receiver. Each succeeded
+in one accepted attempt, passed full decoding, durable save/ACK and exact retrieved
+LangSmith attachment verification. Both user previews received usable-music
+feedback. Human usability feedback is distinct from automated signal checks; lyric
+accuracy, intelligibility, genre faithfulness and comparative quality remain
+unassessed. PCM was finite and
+nonzero with no measured near/full-scale samples, which is an indicator rather
+than proof about audible distortion. LangSmith UI playback was not inspected.
+
+The first FLAC was 974,846 bytes with SHA-256
+`70e752e301520f8e848520b747a884c0bb48ab74ed1f9a8251ac0d3ece295a8a`;
+the second was 648,924 bytes with SHA-256
+`51bcb6456e45328647c3cdb56067eb25f637f7d9cbec13c50ded81e5207a85b1`.
+Warehouse/object MIME `audio/x-flac` and detected `audio/flac` describe the same
+decoded format. Optional attachment API MIME was null; exact bytes matched.
+The packets omitted an exact `output.mime_type` constraint; core validation does
+not normalize these aliases.
+Actual API checks verified two successful native experiments on the same audio
+dataset, intentionally different morning/evening cases, and accepted trace/artifact
+provenance.
+
+The eight-node graph uses stock `SelectCLIPDevice(gpu:0)` for FP32 AR with CPU
+offload, existing FP32/low-VRAM diffusion and CPU VAE. Fixed original lyrics and
+the 15-second cap are unchanged. Empty ABC selects the effective off mode; there
+is no ABC score-planning stage. The canceled CPU trial stopped at 47/375 tokens
+without full audio and is excluded from the GPU pair.
+
+Only the style word morning→evening and both mapped seeds 42→43 changed, with no
+intervening model/runtime reset. Server history totals were **696.921 seconds**
+and **630.994 seconds**; closed factory traces were 700.257132 and 634.166142
+seconds with different transport boundaries. The first cached no nodes; the
+repeat cached loader/selector nodes 1 and 8, while AR/acoustic conditioning and
+diffusion recomputed. AR terminal 375/375 and all 32 NAR sampler steps were
+observed; each observer captured 188 AR progress messages, not every individual
+token event. The [Windows timing table](windows-comfyui.md#yue2-gpu-audio-example)
+separates server totals from combined node receipt intervals.
+
+OS file caches were not cleared, and background downloads/other workloads were
+present. Runtime retained-reference warnings and garbage collections were
+preserved; two successful requests do not establish sustained leak-free memory
+behavior. GPU/RAM observations are sampled, not continuous peaks or hardware
+recommendations. Collector SDK audio import, an application audio UI, other audio
+models and audio interruption/restart recovery remain untested. The checkpoint
+retains separate CC-BY-NC-4.0 terms. See the [backend example](../examples/comfyui-yue2.backend.json),
+[manifest](../examples/comfyui-yue2.models.json), [MIT attribution](../examples/comfyui-yue2.NOTICE.md)
+and [sanitized evidence](evidence/2026-10-20/windows-yue2.json).
 
 ## Reproduce
 
@@ -291,9 +345,10 @@ Configure provider-side limits. Packets themselves have no cost policy or accoun
 The LangSmith verifier requires both isolated test PostgreSQL URLs, an already
 installed Ollama model and LangSmith credentials; it creates synthetic projects and
 records their private inspection URLs in the ignored local evidence file.
-Real audio/video generation, other model combinations and cloud lifecycle checks
+Full video generation, other audio/model combinations and cloud lifecycle checks
 remain release verification work. The Windows text factory, two-draft application
 delivery and Windows GPU image packets have been verified end to end, including
 factory-only recovery during FLUX generation and consecutive fresh-prompt pairs
-for FLUX.3, Qwen and FLUX.1-dev. OS/model-server/network recovery
+for FLUX.3, Qwen and FLUX.1-dev, plus two real YuE2 audio deliveries with user
+usability feedback. Audio-specific interruption and OS/model-server/network recovery
 and visual inspection of the LangSmith comparison UI remain pending.

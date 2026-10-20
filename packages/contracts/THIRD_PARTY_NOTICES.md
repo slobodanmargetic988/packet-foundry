@@ -17,6 +17,12 @@ Its attribution and full MIT notice are preserved in
 Its model manifest records the separate FLUX.1-dev, T5, CLIP-L and AE repository
 license declarations; no model weights or node implementation are included.
 
+The YuE2 audio workflow example adapts an MIT-licensed Comfy-Org workflow.
+Its attribution and full MIT notice are preserved in
+[YuE2 workflow notice](https://github.com/slobodanmargetic988/packet-foundry/blob/main/examples/comfyui-yue2.NOTICE.md).
+Its manifest links the separate CC-BY-NC-4.0 model-card declarations. No model
+weights or ComfyUI node implementation are included.
+
 Runtime dependencies and optional integrations retain their own licenses. Their
 packages include their respective license metadata; distributing an assembled image
 or environment also requires preserving applicable dependency notices. The lockfile

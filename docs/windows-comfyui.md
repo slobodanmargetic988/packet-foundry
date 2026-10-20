@@ -1,4 +1,4 @@
-# Native Windows ComfyUI image factory
+# Native Windows ComfyUI image and audio factory
 
 This guide reproduces verified FLUX.3 Image Klein step-distilled Q4_K_M, Qwen
 Image 2.1 Q4_K_M and FLUX.1-dev Q4_0 configurations on a Windows 10 GTX 1060 with
@@ -10,8 +10,11 @@ and [Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json), plus
 [FLUX.1-dev evidence](evidence/2026-10-20/windows-flux1-dev.json).
 These are functional examples, not guarantees for every 6 GB GPU or another model.
 A sixteen-step FLUX packet also completed after a factory-only process restart
-while the separate ComfyUI process remained running. All three models also passed
-consecutive generations with a changed positive prompt and seed.
+while the separate ComfyUI process remained running. All three image models also passed
+consecutive generations with a changed positive prompt and seed. YuE2 subsequently
+passed two technical audio deliveries with changed style/seed and positive user
+usability feedback; lyric accuracy and comparative quality remain unassessed. See
+[YuE2 evidence](evidence/2026-10-20/windows-yue2.json).
 
 Use separate native environments for the factory and ComfyUI. The factory needs
 only its outbound registry connection and the local ComfyUI server; the machine
@@ -39,7 +42,8 @@ The verified runtime used the official
 The tested CUDA 12.6 build includes SM 6.1. Do not replace its Torch installation
 with an arbitrary newer CUDA wheel and assume old-GPU support remains available.
 Native BF16 was unavailable on the tested GPU. The conservative command below
-uses ordinary FP32 model computation, CPU text encoding and CPU VAE decoding.
+uses ordinary FP32 model computation, CPU image text encoding and CPU VAE decoding.
+The YuE2 graph below explicitly retargets only its AR/CLIP model to GPU.
 
 Download the official portable archive and check it before extraction:
 
@@ -336,6 +340,105 @@ experiments share a dataset with intentionally different red/blue cases;
 neither quality ranking nor controlled performance results are claimed. The
 LangSmith media/comparison UI and application-specific image import were not
 tested here.
+
+## YuE2 GPU audio example
+
+YuE2 produced two consecutive real 15.0-second, 48 kHz stereo FLACs through the
+same native Windows factory and generic HTTP receiver. Each succeeded in one
+attempt, was fully decoded, durably saved and ACKed, and matched its independently
+retrieved LangSmith attachment. Actual API checks verified two successful native
+experiments on the same audio dataset with intentionally different morning/evening
+cases and correct model/profile/seed/trace/artifact provenance. The user listened
+to both actual previews and confirmed usable music. Lyric accuracy, intelligibility,
+genre faithfulness and comparative quality remain unassessed. Human usability
+feedback is distinct from automated signal checks.
+
+Use the [single-checkpoint manifest](../examples/comfyui-yue2.models.json) and
+[eight-node backend](../examples/comfyui-yue2.backend.json). The checkpoint includes
+AR, diffusion and audio VAE components; no cover/transcription model is needed.
+The pinned repackaged and original cards declare
+[CC-BY-NC-4.0](https://creativecommons.org/licenses/by-nc/4.0/), separately from
+Foundry's code license. The adapted upstream workflow and full MIT notice are in
+[example attribution](../examples/comfyui-yue2.NOTICE.md).
+
+Keep the existing image-server flags. Stock `SelectCLIPDevice` routes only the YuE
+AR/CLIP model to `gpu:0`, with CPU offload preserved; VAE decoding stays on CPU and
+diffusion follows the existing FP32 low-VRAM manager. This per-model route preserves
+CPU text placement for the image graphs. The pinned single-GPU widget lists only
+default/cpu, but the core API validator/resolver accepts explicit `gpu:0`; actual
+full AR CUDA loading and computation were observed. Confirm placement in logs,
+because the selector can fall back to the original device if retargeting fails.
+
+Merge template `yue2-gpu-15s-v1` into the existing backend rather than replacing
+image templates. A matching audio-only profile is:
+
+```json
+{
+  "profile_id": "yue2-int8-gpu-15s",
+  "model": "Comfy-Org/YuE2:int8-convrot",
+  "backend": "comfyui-local",
+  "resource_group": "local-gpu",
+  "input_kinds": ["text", "json"],
+  "output_kinds": ["audio"],
+  "supports_live": false,
+  "accept_experiments": false,
+  "templates": ["yue2-gpu-15s-v1"]
+}
+```
+
+Use the same shared GPU group and capacity one as the image profiles. Only style
+and seed are mapped from packets; the seed feeds both AR and diffusion. The graph
+fixes original synthetic lyrics, a 15-second maximum, 375 semantic-token cap, AR
+CFG 1.01, 32 DPM2/sgm_uniform diffusion steps at sampler CFG 1, and FLAC output.
+Empty ABC selects effective off mode despite the retained full widget value; no
+ABC score-generation stage runs. A duration cap is not a promise of exact length,
+and a different request can terminate earlier.
+
+The incomplete CPU trial reached 47/375 semantic tokens before cancellation and
+produced no accepted full audio. It is separate from this GPU pair. The first GPU
+request followed supported model/node-cache clearing; the repeat changed only the
+style word morning→evening and both mapped seeds 42→43. No process restart, model
+unload or cache clear occurred between them. The first cached no nodes; the repeat
+cached loader and selector nodes 1 and 8, while AR/conditioning and diffusion ran
+again. Both reached AR terminal progress 375/375, with 188 emitted progress messages
+captured per run, and all 32 diffusion steps were observed. This does not claim
+that every AR token emitted an individually captured progress event.
+
+| Observation | Morning style, seed 42, model/node state cleared | Evening style, seed 43, model/node state preserved |
+| --- | --- | --- |
+| Total server execution | 696.921 s | 630.994 s |
+| AR plus acoustic-conditioning node | 585.505 s | 557.624 s |
+| NAR sampler node, including model preparation | 56.461 s | 43.988 s |
+| CPU audio VAE decode node | 22.956 s | 21.263 s |
+| Closed factory trace | 700.257132 s | 634.166142 s |
+
+Server totals use native execution-start/success timestamps; node intervals use
+observer receipt boundaries and include preparation, casting and computation.
+The AR node also performs acoustic conditioning. These are not pure token-compute
+or exact weight-loading measurements. OS file caches were not cleared and
+background model downloads/other workloads were active. Retaining node/model
+state does not prove complete GPU weight residency or controlled warm throughput.
+
+The FLACs were 974,846 and 648,924 bytes and each decoded to 720,000 stereo sample
+frames. Both contained finite, nonzero PCM, with zero measured samples at or above
+0.999 full scale; that indicator does not prove absence of audible distortion.
+Warehouse and object responses declared `audio/x-flac`; independent detection
+reported `audio/flac`. The optional attachment API MIME field was null. Exact
+content bytes and decoding matched despite these aliases; LangSmith UI playback
+was not inspected. These verification packets left `output.mime_type` unset.
+For portable FLAC requests, omit that exact MIME constraint, or match the
+factory's actual `audio/x-flac` declaration. Packet validation uses exact MIME
+matching; it does not normalize `audio/flac` and `audio/x-flac`.
+
+Runtime unload transitions emitted retained-reference/memory-leak warnings and
+garbage-collection messages. Both outputs completed, but sustained leak-free
+memory behavior has not been established. Sampled device-wide GPU use reached
+5,885 and 5,883 MiB respectively, including existing workloads. Samples are not
+continuous per-process peaks or minimum-hardware recommendations. See the
+[sanitized technical evidence](evidence/2026-10-20/windows-yue2.json).
+Collector SDK audio import, an application audio UI, lyric accuracy, comparative
+quality, audio-specific interruption recovery and full video generation remain
+unverified.
 
 ## Login startup and verification limits
 

@@ -1,0 +1,46 @@
+{
+  "description": "Pinned checkpoint and sources for the verified native Windows YuE2 GPU audio example. Two consecutive FLACs passed technical delivery/decoding/tracing checks and user usability feedback. No weights are included; review upstream model terms before downloading or use.",
+  "model_terms": {
+    "name": "Creative Commons Attribution-NonCommercial 4.0 International",
+    "identifier": "CC-BY-NC-4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "repackaged_model_card_url": "https://huggingface.co/Comfy-Org/YuE2/blob/2f76ca75e6ee094169de899cc7fc99d6887e2196/README.md",
+    "upstream_model_card_url": "https://huggingface.co/m-a-p/YuE2-3B/blob/8f24312f187763b9854adeec87e437e2b03bbff1/README.md",
+    "scope": "The pinned repackaged and original model cards declare CC-BY-NC-4.0; these model terms remain separate from Packet Foundry code. These are evaluation trials.",
+    "weights_distributed_here": false
+  },
+  "models": [
+    {
+      "repository": "Comfy-Org/YuE2",
+      "revision": "2f76ca75e6ee094169de899cc7fc99d6887e2196",
+      "filename": "checkpoints/yue2_3b_int8_convrot.safetensors",
+      "destination_relative_to_comfyui": "models/checkpoints/yue2_3b_int8_convrot.safetensors",
+      "size_bytes": 3960938800,
+      "sha256": "96fe199377309001ed8cd26a944baeee8cc31a20ba7c36d1d3c0a7e1f4149db6",
+      "url": "https://huggingface.co/Comfy-Org/YuE2/resolve/2f76ca75e6ee094169de899cc7fc99d6887e2196/checkpoints/yue2_3b_int8_convrot.safetensors",
+      "declared_license": "CC-BY-NC-4.0",
+      "license_declaration_url": "https://huggingface.co/Comfy-Org/YuE2/blob/2f76ca75e6ee094169de899cc7fc99d6887e2196/README.md",
+      "provenance": "Official Comfy-Org repackaged INT8 ConvRot YuE2 3B checkpoint, containing the autoregressive encoder, non-autoregressive diffusion model and audio VAE. No separate cover/transcription checkpoint is required by this text-to-music graph."
+    }
+  ],
+  "workflow_sources": [
+    {
+      "name": "Comfy-Org YuE2 text-to-music API benchmark",
+      "revision": "46e060ea88eb07adecf07197ec384c54a70e030c",
+      "url": "https://github.com/Comfy-Org/workflow_templates/blob/46e060ea88eb07adecf07197ec384c54a70e030c/benchmarks/audio_yue2_text2music.json",
+      "license": "MIT",
+      "notice_file": "comfyui-yue2.NOTICE.md"
+    },
+    {
+      "name": "YuE2 core nodes (runtime reference only; implementation not redistributed here)",
+      "revision": "63be2f9b82ad0dac88a7ceaa28a9cf3154125a18",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/63be2f9b82ad0dac88a7ceaa28a9cf3154125a18/comfy_extras/nodes_yue2.py"
+    },
+    {
+      "name": "Stock SelectCLIPDevice runtime interface (implementation not redistributed here)",
+      "revision": "63be2f9b82ad0dac88a7ceaa28a9cf3154125a18",
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/63be2f9b82ad0dac88a7ceaa28a9cf3154125a18/comfy_extras/nodes_multigpu.py",
+      "installed_source_sha256": "5998b300ce3985a91bd216b7746632b4e7661379aee38d4fe430784377896dda"
+    }
+  ]
+}
