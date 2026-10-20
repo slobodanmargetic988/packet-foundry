@@ -8,8 +8,8 @@ attachments. See [FLUX evidence](evidence/2026-10-20/windows-comfyui-image.json)
 and [Qwen evidence](evidence/2026-10-20/windows-qwen-image21.json).
 These are functional examples, not guarantees for every 6 GB GPU or another model.
 A sixteen-step FLUX packet also completed after a factory-only process restart
-while the separate ComfyUI process remained running. The Qwen check includes two
-consecutive generations with a changed prompt and seed.
+while the separate ComfyUI process remained running. Both models also passed
+consecutive generations with a changed positive prompt and seed.
 
 Use separate native environments for the factory and ComfyUI. The factory needs
 only its outbound registry connection and the local ComfyUI server; the machine
@@ -151,9 +151,48 @@ Visual inspection should check the requested content; a valid PNG alone is not
 enough. Optional LangSmith content capture should be enabled only when the inputs
 and generated output may be sent there. See [tracing configuration](factory.md#optional-langsmith).
 
-The verified cold run took 127.90 seconds in ComfyUI, including loading, prompt
+The initial cold functional run took 127.90 seconds in ComfyUI, including loading, prompt
 encoding and decoding. Its factory trace lasted about 130 seconds. These values
 describe one request, not warm throughput, a model comparison or a time guarantee.
+
+### Consecutive four-step FLUX verification
+
+A later pair used the same four-step graph with a red fox brief/seed 42, then a
+blue fox brief/seed 43. Both images passed visual inspection, full PNG decoding,
+durable receiver save, Warehouse ACK, exact LangSmith attachment matching and
+native experiment API provenance checks. Each packet succeeded in one attempt.
+The first red PNG was 303,997 bytes; the blue PNG was 282,711 bytes.
+
+The first request followed a supported model unload and node-cache clear. The
+second preserved the same ComfyUI process, model/profile/settings and cache state.
+Only positive prompt and seed changed. This forced positive text conditioning and
+sampling to run again while allowing unchanged negative conditioning and loader
+outputs to be reused. OS file caches were not cleared; neither cold-disk speed
+nor complete GPU weight residency is established.
+
+| Observation | Red brief, seed 42, model/node state cleared | Blue brief, seed 43, model/node state preserved |
+| --- | --- | --- |
+| Total server execution | 275.255 s | 70.742 s |
+| First negative-conditioning node | 135.351 s | cached |
+| Positive-conditioning node | 32.172 s | 31.674 s |
+| KSampler node, including model preparation | 72.125 s | 23.449 s |
+| CPU VAE decode node | 17.028 s | 15.557 s |
+| Final sampler progress-bar elapsed, rounded | about 24 s | about 23 s |
+
+The total uses server execution-start/success timestamps. Node intervals use
+observer receipt boundaries and include lazy materialization/loading, casting and
+computation inside each node; the long first conditioning node is not an isolated
+weight-loading or pure encoding measurement. The second run cached nodes 1, 2, 3,
+5 and 6; positive text node 4 and sampler node 7 executed, with all four steps
+observed. Sampled device-wide GPU use reached 2,832 MiB and 2,875 MiB respectively,
+including existing workloads; these are sampled maxima, not continuous peaks.
+
+The pair ran while a low-priority model download was active. These timings are
+functional observations with background activity and OS caching, not controlled
+performance measurements. The native experiments have intentionally different
+case identities for the red/blue prompts on the same dataset. This pair is
+separate from both the original 127.90-second image and the sixteen-step factory
+restart proof. It does not turn those earlier checks into a matched-settings pair.
 
 ## Qwen Image 2.1 example
 
